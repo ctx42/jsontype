@@ -221,6 +221,28 @@ func Test_NewRune(t *testing.T) {
 	assert.Equal(t, rune(42), have.val)
 }
 
+func Test_Value_GoType(t *testing.T) {
+	// --- Given ---
+	val := &Value{typ: String, val: "abc"}
+
+	// --- When ---
+	have := val.GoType()
+
+	// --- Then ---
+	assert.Equal(t, String, have)
+}
+
+func Test_Value_GoValue(t *testing.T) {
+	// --- Given ---
+	val := &Value{typ: String, val: "abc"}
+
+	// --- When ---
+	have := val.GoValue()
+
+	// --- Then ---
+	assert.Equal(t, "abc", have)
+}
+
 func Test_Value_MarshalJSON(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---

@@ -47,7 +47,6 @@ type TypeName string
 // types are by default added to global registry in init function.
 const (
 	Int        TypeName = "int"
-	Byte       TypeName = "byte"
 	Int8       TypeName = "int8"
 	Int16      TypeName = "int16"
 	Int32      TypeName = "int32"
@@ -55,6 +54,7 @@ const (
 	Int64      TypeName = "int64"
 	UInt       TypeName = "uint"
 	UInt8      TypeName = "uint8"
+	Byte       TypeName = "byte"
 	UInt16     TypeName = "uint16"
 	UInt32     TypeName = "uint32"
 	UInt64     TypeName = "uint64"
@@ -125,34 +125,36 @@ func NewByte(val byte) *Value { return &Value{typ: Byte, val: val} }
 // NewRune returns new instance of [Value] representing a byte.
 func NewRune(val rune) *Value { return &Value{typ: Rune, val: val} }
 
-func (v *Value) MarshalJSON() ([]byte, error) {
-	if v == nil || v.typ == "" {
+func (val *Value) GoType() TypeName { return val.typ }
+func (val *Value) GoValue() any     { return val.val }
+
+func (val *Value) MarshalJSON() ([]byte, error) {
+	if val == nil || val.typ == "" {
 		return nil, ErrInvValue
 	}
 	data := map[string]any{
-		"type":  v.typ,
-		"value": v.val,
+		"type":  val.typ,
+		"value": val.val,
 	}
 	return json.Marshal(data)
 }
 
-func (v *Value) UnmarshalJSON(bytes []byte) error {
-	val := struct {
+func (val *Value) UnmarshalJSON(bytes []byte) error {
+	tmp := struct {
 		Type  TypeName `json:"type"`
 		Value any      `json:"value"`
 	}{}
-
-	if err := json.Unmarshal(bytes, &val); err != nil {
+	if err := json.Unmarshal(bytes, &tmp); err != nil {
 		return err
 	}
 
 	var err error
-	v.typ = val.Type
-	dec := registry.Decoder(val.Type)
+	val.typ = tmp.Type
+	dec := registry.Decoder(tmp.Type)
 	if dec == nil {
-		return fmt.Errorf("%w: %s", ErrUnkType, val.Type)
+		return fmt.Errorf("%w: %s", ErrUnkType, tmp.Type)
 	}
-	if v.val, err = dec(val.Value); err != nil {
+	if val.val, err = dec(tmp.Value); err != nil {
 		return err
 	}
 	return nil
