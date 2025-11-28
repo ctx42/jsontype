@@ -9,8 +9,8 @@
   * [Supported types](#supported-types)
 <!-- TOC -->
 
-`jsontype` is a small module that helps preserve Go types when marshaling them
-to JSON by adding the Go type to the marshalled JSON.
+`jsontype` is small Go module that preserves Go types when marshaling to JSON 
+by embedding the type information in the JSON itself.
 
 ## Marshaling and Unmarshaling
 
