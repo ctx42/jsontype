@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: (c) 2025 Rafal Zajac <rzajac@gmail.com>
 // SPDX-License-Identifier: MIT
 
+// Package jsontype is a small module that helps preserve Go types when
+// marshaling them to JSON by adding the Go type to the marshalled JSON.
 package jsontype
 
 import (
