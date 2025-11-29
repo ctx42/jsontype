@@ -11,7 +11,7 @@ import (
 	"github.com/ctx42/testing/pkg/assert"
 )
 
-func Test_decodeInt_success_tabular(t *testing.T) {
+func Test_DecodeInt_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -24,7 +24,7 @@ func Test_decodeInt_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeInt(tc.have)
+			have, err := DecodeInt(tc.have)
 
 			// --- Then ---
 			assert.NoError(t, err)
@@ -33,7 +33,7 @@ func Test_decodeInt_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeInt_error_tabular(t *testing.T) {
+func Test_DecodeInt_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -47,35 +47,35 @@ func Test_decodeInt_error_tabular(t *testing.T) {
 			42,
 			0,
 			ErrInvType,
-			"decodeInt: requires float64 value got int: invalid type",
+			"DecodeInt: requires float64 value got int: invalid type",
 		},
 		{
 			"integer from fraction",
 			42.1,
 			0,
 			ErrInvValue,
-			"decodeInt: requires non-fractional value: invalid value",
+			"DecodeInt: requires non-fractional value: invalid value",
 		},
 		{
 			"int out of range negative",
 			-math.MaxFloat64,
 			0,
 			ErrInvRange,
-			"decodeInt: requires float64 value in range of int: invalid range",
+			"DecodeInt: requires float64 value in range of int: invalid range",
 		},
 		{
 			"int out of range positive",
 			math.MaxFloat64,
 			0,
 			ErrInvRange,
-			"decodeInt: requires float64 value in range of int: invalid range",
+			"DecodeInt: requires float64 value in range of int: invalid range",
 		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeInt(tc.have)
+			have, err := DecodeInt(tc.have)
 
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
@@ -85,7 +85,7 @@ func Test_decodeInt_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeInt8_success_tabular(t *testing.T) {
+func Test_DecodeInt8_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -98,7 +98,7 @@ func Test_decodeInt8_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeInt8(tc.have)
+			have, err := DecodeInt8(tc.have)
 
 			// --- Then ---
 			assert.NoError(t, err)
@@ -107,7 +107,7 @@ func Test_decodeInt8_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeInt8_error_tabular(t *testing.T) {
+func Test_DecodeInt8_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -121,21 +121,21 @@ func Test_decodeInt8_error_tabular(t *testing.T) {
 			42,
 			0,
 			ErrInvType,
-			"decodeInt8: requires float64 value got int: invalid type",
+			"DecodeInt8: requires float64 value got int: invalid type",
 		},
 		{
 			"integer from fraction",
 			42.1,
 			0,
 			ErrInvValue,
-			"decodeInt8: requires non-fractional value: invalid value",
+			"DecodeInt8: requires non-fractional value: invalid value",
 		},
 		{
 			"int out of range negative",
 			-math.MaxFloat64,
 			0,
 			ErrInvRange,
-			"decodeInt8: requires float64 value in range of int8: " +
+			"DecodeInt8: requires float64 value in range of int8: " +
 				"invalid range",
 		},
 		{
@@ -143,7 +143,7 @@ func Test_decodeInt8_error_tabular(t *testing.T) {
 			math.MaxFloat64,
 			0,
 			ErrInvRange,
-			"decodeInt8: requires float64 value in range of int8: " +
+			"DecodeInt8: requires float64 value in range of int8: " +
 				"invalid range",
 		},
 	}
@@ -151,7 +151,7 @@ func Test_decodeInt8_error_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeInt8(tc.have)
+			have, err := DecodeInt8(tc.have)
 
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
@@ -161,7 +161,7 @@ func Test_decodeInt8_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeInt16_success_tabular(t *testing.T) {
+func Test_DecodeInt16_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -174,7 +174,7 @@ func Test_decodeInt16_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeInt16(tc.have)
+			have, err := DecodeInt16(tc.have)
 
 			// --- Then ---
 			assert.NoError(t, err)
@@ -183,7 +183,7 @@ func Test_decodeInt16_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeInt16_error_tabular(t *testing.T) {
+func Test_DecodeInt16_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -197,21 +197,21 @@ func Test_decodeInt16_error_tabular(t *testing.T) {
 			42,
 			0,
 			ErrInvType,
-			"decodeInt16: requires float64 value got int: invalid type",
+			"DecodeInt16: requires float64 value got int: invalid type",
 		},
 		{
 			"integer from fraction",
 			42.1,
 			0,
 			ErrInvValue,
-			"decodeInt16: requires non-fractional value: invalid value",
+			"DecodeInt16: requires non-fractional value: invalid value",
 		},
 		{
 			"int out of range negative",
 			-math.MaxFloat64,
 			0,
 			ErrInvRange,
-			"decodeInt16: requires float64 value in range of int16: " +
+			"DecodeInt16: requires float64 value in range of int16: " +
 				"invalid range",
 		},
 		{
@@ -219,7 +219,7 @@ func Test_decodeInt16_error_tabular(t *testing.T) {
 			math.MaxFloat64,
 			0,
 			ErrInvRange,
-			"decodeInt16: requires float64 value in range of int16: " +
+			"DecodeInt16: requires float64 value in range of int16: " +
 				"invalid range",
 		},
 	}
@@ -227,7 +227,7 @@ func Test_decodeInt16_error_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeInt16(tc.have)
+			have, err := DecodeInt16(tc.have)
 
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
@@ -237,10 +237,10 @@ func Test_decodeInt16_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeInt32(t *testing.T) {
+func Test_DecodeInt32(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- When ---
-		have, err := decodeInt32(42.0)
+		have, err := DecodeInt32(42.0)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -249,20 +249,20 @@ func Test_decodeInt32(t *testing.T) {
 
 	t.Run("error", func(t *testing.T) {
 		// --- When ---
-		have, err := decodeInt32(42)
+		have, err := DecodeInt32(42)
 
 		// --- Then ---
 		assert.ErrorIs(t, ErrInvType, err)
-		wMsg := "decodeInt32: requires float64 value got int: invalid type"
+		wMsg := "DecodeInt32: requires float64 value got int: invalid type"
 		assert.ErrorEqual(t, wMsg, err)
 		assert.Equal(t, int32(0), have)
 	})
 }
 
-func Test_decodeRune(t *testing.T) {
+func Test_DecodeRune(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- When ---
-		have, err := decodeRune(42.0)
+		have, err := DecodeRune(42.0)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -271,17 +271,17 @@ func Test_decodeRune(t *testing.T) {
 
 	t.Run("error", func(t *testing.T) {
 		// --- When ---
-		have, err := decodeRune(42)
+		have, err := DecodeRune(42)
 
 		// --- Then ---
 		assert.ErrorIs(t, ErrInvType, err)
-		wMsg := "decodeRune: requires float64 value got int: invalid type"
+		wMsg := "DecodeRune: requires float64 value got int: invalid type"
 		assert.ErrorEqual(t, wMsg, err)
 		assert.Equal(t, rune(0), have)
 	})
 }
 
-func Test_decodeNamedInt32_success_tabular(t *testing.T) {
+func Test_DecodeNamedInt32_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -304,7 +304,7 @@ func Test_decodeNamedInt32_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeNamedInt32_error_tabular(t *testing.T) {
+func Test_DecodeNamedInt32_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -361,7 +361,7 @@ func Test_decodeNamedInt32_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeInt64_success_tabular(t *testing.T) {
+func Test_DecodeInt64_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -374,7 +374,7 @@ func Test_decodeInt64_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeInt64(tc.have)
+			have, err := DecodeInt64(tc.have)
 
 			// --- Then ---
 			assert.NoError(t, err)
@@ -383,7 +383,7 @@ func Test_decodeInt64_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeInt64_error_tabular(t *testing.T) {
+func Test_DecodeInt64_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -397,21 +397,21 @@ func Test_decodeInt64_error_tabular(t *testing.T) {
 			42,
 			0,
 			ErrInvType,
-			"decodeInt64: requires float64 value got int: invalid type",
+			"DecodeInt64: requires float64 value got int: invalid type",
 		},
 		{
 			"integer from fraction",
 			42.1,
 			0,
 			ErrInvValue,
-			"decodeInt64: requires non-fractional value: invalid value",
+			"DecodeInt64: requires non-fractional value: invalid value",
 		},
 		{
 			"int out of range negative",
 			-math.MaxFloat64,
 			0,
 			ErrInvRange,
-			"decodeInt64: requires float64 value in range of int64: " +
+			"DecodeInt64: requires float64 value in range of int64: " +
 				"invalid range",
 		},
 		{
@@ -419,7 +419,7 @@ func Test_decodeInt64_error_tabular(t *testing.T) {
 			math.MaxFloat64,
 			0,
 			ErrInvRange,
-			"decodeInt64: requires float64 value in range of int64: " +
+			"DecodeInt64: requires float64 value in range of int64: " +
 				"invalid range",
 		},
 	}
@@ -427,7 +427,7 @@ func Test_decodeInt64_error_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeInt64(tc.have)
+			have, err := DecodeInt64(tc.have)
 
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
@@ -437,7 +437,7 @@ func Test_decodeInt64_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeUInt_success_tabular(t *testing.T) {
+func Test_DecodeUInt_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -450,7 +450,7 @@ func Test_decodeUInt_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeUInt(tc.have)
+			have, err := DecodeUInt(tc.have)
 
 			// --- Then ---
 			assert.NoError(t, err)
@@ -459,7 +459,7 @@ func Test_decodeUInt_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeUInt_error_tabular(t *testing.T) {
+func Test_DecodeUInt_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -473,21 +473,21 @@ func Test_decodeUInt_error_tabular(t *testing.T) {
 			42,
 			0,
 			ErrInvType,
-			"decodeUInt: requires float64 value got int: invalid type",
+			"DecodeUInt: requires float64 value got int: invalid type",
 		},
 		{
 			"integer from fraction",
 			42.1,
 			0,
 			ErrInvValue,
-			"decodeUInt: requires non-fractional value: invalid value",
+			"DecodeUInt: requires non-fractional value: invalid value",
 		},
 		{
 			"int out of range negative",
 			-math.MaxFloat64,
 			0,
 			ErrInvRange,
-			"decodeUInt: requires float64 value in range of uint: " +
+			"DecodeUInt: requires float64 value in range of uint: " +
 				"invalid range",
 		},
 		{
@@ -495,7 +495,7 @@ func Test_decodeUInt_error_tabular(t *testing.T) {
 			math.MaxFloat64,
 			0,
 			ErrInvRange,
-			"decodeUInt: requires float64 value in range of uint: " +
+			"DecodeUInt: requires float64 value in range of uint: " +
 				"invalid range",
 		},
 	}
@@ -503,7 +503,7 @@ func Test_decodeUInt_error_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeUInt(tc.have)
+			have, err := DecodeUInt(tc.have)
 
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
@@ -513,10 +513,10 @@ func Test_decodeUInt_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeUInt8(t *testing.T) {
+func Test_DecodeUInt8(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- When ---
-		have, err := decodeUInt8(42.0)
+		have, err := DecodeUInt8(42.0)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -525,20 +525,20 @@ func Test_decodeUInt8(t *testing.T) {
 
 	t.Run("error", func(t *testing.T) {
 		// --- When ---
-		have, err := decodeUInt8(42)
+		have, err := DecodeUInt8(42)
 
 		// --- Then ---
 		assert.ErrorIs(t, ErrInvType, err)
-		wMsg := "decodeUInt8: requires float64 value got int: invalid type"
+		wMsg := "DecodeUInt8: requires float64 value got int: invalid type"
 		assert.ErrorEqual(t, wMsg, err)
 		assert.Equal(t, uint8(0), have)
 	})
 }
 
-func Test_decodeByte(t *testing.T) {
+func Test_DecodeByte(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- When ---
-		have, err := decodeByte(42.0)
+		have, err := DecodeByte(42.0)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -547,17 +547,17 @@ func Test_decodeByte(t *testing.T) {
 
 	t.Run("error", func(t *testing.T) {
 		// --- When ---
-		have, err := decodeByte(42)
+		have, err := DecodeByte(42)
 
 		// --- Then ---
 		assert.ErrorIs(t, ErrInvType, err)
-		wMsg := "decodeByte: requires float64 value got int: invalid type"
+		wMsg := "DecodeByte: requires float64 value got int: invalid type"
 		assert.ErrorEqual(t, wMsg, err)
 		assert.Equal(t, byte(0), have)
 	})
 }
 
-func Test_decodeNamedUInt8_success_tabular(t *testing.T) {
+func Test_DecodeNamedUInt8_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -580,7 +580,7 @@ func Test_decodeNamedUInt8_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeNamedUInt8_error_tabular(t *testing.T) {
+func Test_DecodeNamedUInt8_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -637,7 +637,7 @@ func Test_decodeNamedUInt8_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeUInt16_success_tabular(t *testing.T) {
+func Test_DecodeUInt16_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -650,7 +650,7 @@ func Test_decodeUInt16_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeUInt16(tc.have)
+			have, err := DecodeUInt16(tc.have)
 
 			// --- Then ---
 			assert.NoError(t, err)
@@ -659,7 +659,7 @@ func Test_decodeUInt16_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeUInt16_error_tabular(t *testing.T) {
+func Test_DecodeUInt16_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -673,21 +673,21 @@ func Test_decodeUInt16_error_tabular(t *testing.T) {
 			42,
 			0,
 			ErrInvType,
-			"decodeUInt16: requires float64 value got int: invalid type",
+			"DecodeUInt16: requires float64 value got int: invalid type",
 		},
 		{
 			"integer from fraction",
 			42.1,
 			0,
 			ErrInvValue,
-			"decodeUInt16: requires non-fractional value: invalid value",
+			"DecodeUInt16: requires non-fractional value: invalid value",
 		},
 		{
 			"int out of range negative",
 			-math.MaxFloat64,
 			0,
 			ErrInvRange,
-			"decodeUInt16: requires float64 value in range of uint16: " +
+			"DecodeUInt16: requires float64 value in range of uint16: " +
 				"invalid range",
 		},
 		{
@@ -695,7 +695,7 @@ func Test_decodeUInt16_error_tabular(t *testing.T) {
 			math.MaxFloat64,
 			0,
 			ErrInvRange,
-			"decodeUInt16: requires float64 value in range of uint16: " +
+			"DecodeUInt16: requires float64 value in range of uint16: " +
 				"invalid range",
 		},
 	}
@@ -703,7 +703,7 @@ func Test_decodeUInt16_error_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeUInt16(tc.have)
+			have, err := DecodeUInt16(tc.have)
 
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
@@ -713,7 +713,7 @@ func Test_decodeUInt16_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeUInt32_success_tabular(t *testing.T) {
+func Test_DecodeUInt32_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -726,7 +726,7 @@ func Test_decodeUInt32_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeUInt32(tc.have)
+			have, err := DecodeUInt32(tc.have)
 
 			// --- Then ---
 			assert.NoError(t, err)
@@ -735,7 +735,7 @@ func Test_decodeUInt32_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeUInt32_error_tabular(t *testing.T) {
+func Test_DecodeUInt32_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -749,35 +749,35 @@ func Test_decodeUInt32_error_tabular(t *testing.T) {
 			42,
 			0,
 			ErrInvType,
-			"decodeUInt32: requires float64 value got int: invalid type",
+			"DecodeUInt32: requires float64 value got int: invalid type",
 		},
 		{
 			"integer from fraction",
 			42.1,
 			0,
 			ErrInvValue,
-			"decodeUInt32: requires non-fractional value: invalid value",
+			"DecodeUInt32: requires non-fractional value: invalid value",
 		},
 		{
 			"int out of range negative",
 			-math.MaxFloat64,
 			0,
 			ErrInvRange,
-			"decodeUInt32: requires float64 value in range of uint32: invalid range",
+			"DecodeUInt32: requires float64 value in range of uint32: invalid range",
 		},
 		{
 			"int out of range positive",
 			math.MaxFloat64,
 			0,
 			ErrInvRange,
-			"decodeUInt32: requires float64 value in range of uint32: invalid range",
+			"DecodeUInt32: requires float64 value in range of uint32: invalid range",
 		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeUInt32(tc.have)
+			have, err := DecodeUInt32(tc.have)
 
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
@@ -787,7 +787,7 @@ func Test_decodeUInt32_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeUInt64_success_tabular(t *testing.T) {
+func Test_DecodeUInt64_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -800,7 +800,7 @@ func Test_decodeUInt64_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeUInt64(tc.have)
+			have, err := DecodeUInt64(tc.have)
 
 			// --- Then ---
 			assert.NoError(t, err)
@@ -809,7 +809,7 @@ func Test_decodeUInt64_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeUInt64_error_tabular(t *testing.T) {
+func Test_DecodeUInt64_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -823,35 +823,35 @@ func Test_decodeUInt64_error_tabular(t *testing.T) {
 			42,
 			0,
 			ErrInvType,
-			"decodeUInt64: requires float64 value got int: invalid type",
+			"DecodeUInt64: requires float64 value got int: invalid type",
 		},
 		{
 			"integer from fraction",
 			42.1,
 			0,
 			ErrInvValue,
-			"decodeUInt64: requires non-fractional value: invalid value",
+			"DecodeUInt64: requires non-fractional value: invalid value",
 		},
 		{
 			"int out of range negative",
 			-math.MaxFloat64,
 			0,
 			ErrInvRange,
-			"decodeUInt64: requires float64 value in range of uint64: invalid range",
+			"DecodeUInt64: requires float64 value in range of uint64: invalid range",
 		},
 		{
 			"int out of range positive",
 			math.MaxFloat64,
 			0,
 			ErrInvRange,
-			"decodeUInt64: requires float64 value in range of uint64: invalid range",
+			"DecodeUInt64: requires float64 value in range of uint64: invalid range",
 		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeUInt64(tc.have)
+			have, err := DecodeUInt64(tc.have)
 
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
@@ -861,7 +861,7 @@ func Test_decodeUInt64_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeFloat32_success_tabular(t *testing.T) {
+func Test_DecodeFloat32_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -874,7 +874,7 @@ func Test_decodeFloat32_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeFloat32(tc.have)
+			have, err := DecodeFloat32(tc.have)
 
 			// --- Then ---
 			assert.NoError(t, err)
@@ -883,7 +883,7 @@ func Test_decodeFloat32_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeFloat32_error_tabular(t *testing.T) {
+func Test_DecodeFloat32_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -897,28 +897,28 @@ func Test_decodeFloat32_error_tabular(t *testing.T) {
 			42,
 			0,
 			ErrInvType,
-			"decodeFloat32: requires float64 value got int: invalid type",
+			"DecodeFloat32: requires float64 value got int: invalid type",
 		},
 		{
 			"int out of range negative",
 			-math.MaxFloat64,
 			0,
 			ErrInvRange,
-			"decodeFloat32: requires float64 value in range of float32: invalid range",
+			"DecodeFloat32: requires float64 value in range of float32: invalid range",
 		},
 		{
 			"int out of range positive",
 			math.MaxFloat64,
 			0,
 			ErrInvRange,
-			"decodeFloat32: requires float64 value in range of float32: invalid range",
+			"DecodeFloat32: requires float64 value in range of float32: invalid range",
 		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeFloat32(tc.have)
+			have, err := DecodeFloat32(tc.have)
 
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
@@ -928,7 +928,7 @@ func Test_decodeFloat32_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeFloat64_success_tabular(t *testing.T) {
+func Test_DecodeFloat64_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -941,7 +941,7 @@ func Test_decodeFloat64_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeFloat64(tc.have)
+			have, err := DecodeFloat64(tc.have)
 
 			// --- Then ---
 			assert.NoError(t, err)
@@ -950,7 +950,7 @@ func Test_decodeFloat64_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeFloat64_error_tabular(t *testing.T) {
+func Test_DecodeFloat64_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -964,14 +964,14 @@ func Test_decodeFloat64_error_tabular(t *testing.T) {
 			42,
 			0,
 			ErrInvType,
-			"decodeFloat64: requires float64 value got int: invalid type",
+			"DecodeFloat64: requires float64 value got int: invalid type",
 		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeFloat64(tc.have)
+			have, err := DecodeFloat64(tc.have)
 
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
@@ -981,7 +981,7 @@ func Test_decodeFloat64_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeString_success_tabular(t *testing.T) {
+func Test_DecodeString_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -994,7 +994,7 @@ func Test_decodeString_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeString(tc.have)
+			have, err := DecodeString(tc.have)
 
 			// --- Then ---
 			assert.NoError(t, err)
@@ -1003,7 +1003,7 @@ func Test_decodeString_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeString_error_tabular(t *testing.T) {
+func Test_DecodeString_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -1017,14 +1017,14 @@ func Test_decodeString_error_tabular(t *testing.T) {
 			42,
 			"",
 			ErrInvType,
-			"decodeString: requires string value got int: invalid type",
+			"DecodeString: requires string value got int: invalid type",
 		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeString(tc.have)
+			have, err := DecodeString(tc.have)
 
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
@@ -1034,7 +1034,7 @@ func Test_decodeString_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeBool_success_tabular(t *testing.T) {
+func Test_DecodeBool_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -1048,7 +1048,7 @@ func Test_decodeBool_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeBool(tc.have)
+			have, err := DecodeBool(tc.have)
 
 			// --- Then ---
 			assert.NoError(t, err)
@@ -1057,7 +1057,7 @@ func Test_decodeBool_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeBool_error_tabular(t *testing.T) {
+func Test_DecodeBool_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -1071,14 +1071,14 @@ func Test_decodeBool_error_tabular(t *testing.T) {
 			42,
 			false,
 			ErrInvType,
-			"decodeBool: requires boolean value got int: invalid type",
+			"DecodeBool: requires boolean value got int: invalid type",
 		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeBool(tc.have)
+			have, err := DecodeBool(tc.have)
 
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
@@ -1088,7 +1088,7 @@ func Test_decodeBool_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeTime_success_tabular(t *testing.T) {
+func Test_DecodeTime_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -1105,7 +1105,7 @@ func Test_decodeTime_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeTime(tc.have)
+			have, err := DecodeTime(tc.have)
 
 			// --- Then ---
 			assert.NoError(t, err)
@@ -1114,7 +1114,7 @@ func Test_decodeTime_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeTime_error_tabular(t *testing.T) {
+func Test_DecodeTime_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -1128,14 +1128,14 @@ func Test_decodeTime_error_tabular(t *testing.T) {
 			42,
 			time.Time{},
 			ErrInvType,
-			"decodeTime: requires boolean value got int: invalid type",
+			"DecodeTime: requires boolean value got int: invalid type",
 		},
 		{
 			"invalid time format",
 			"abc",
 			time.Time{},
 			ErrInvFormat,
-			"decodeTime: parsing RFC3339 string value to time.Time: " +
+			"DecodeTime: parsing RFC3339 string value to time.Time: " +
 				"invalid format",
 		},
 	}
@@ -1143,7 +1143,7 @@ func Test_decodeTime_error_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeTime(tc.have)
+			have, err := DecodeTime(tc.have)
 
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
@@ -1153,7 +1153,7 @@ func Test_decodeTime_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeDuration_success_tabular(t *testing.T) {
+func Test_DecodeDuration_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -1166,7 +1166,7 @@ func Test_decodeDuration_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeDuration(tc.have)
+			have, err := DecodeDuration(tc.have)
 
 			// --- Then ---
 			assert.NoError(t, err)
@@ -1175,7 +1175,7 @@ func Test_decodeDuration_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeDuration_error_tabular(t *testing.T) {
+func Test_DecodeDuration_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -1189,14 +1189,14 @@ func Test_decodeDuration_error_tabular(t *testing.T) {
 			42,
 			time.Duration(0),
 			ErrInvType,
-			"decodeDuration: requires boolean value got int: invalid type",
+			"DecodeDuration: requires boolean value got int: invalid type",
 		},
 		{
 			"invalid duration format",
 			"abc",
 			time.Duration(0),
 			ErrInvFormat,
-			"decodeDuration: parsing string value to time.Duration: " +
+			"DecodeDuration: parsing string value to time.Duration: " +
 				"invalid format",
 		},
 	}
@@ -1204,7 +1204,7 @@ func Test_decodeDuration_error_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeDuration(tc.have)
+			have, err := DecodeDuration(tc.have)
 
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
@@ -1214,7 +1214,7 @@ func Test_decodeDuration_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeComplex64_success_tabular(t *testing.T) {
+func Test_DecodeComplex64_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -1227,7 +1227,7 @@ func Test_decodeComplex64_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeComplex64(tc.have)
+			have, err := DecodeComplex64(tc.have)
 
 			// --- Then ---
 			assert.NoError(t, err)
@@ -1236,7 +1236,7 @@ func Test_decodeComplex64_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeComplex64_error_tabular(t *testing.T) {
+func Test_DecodeComplex64_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -1250,14 +1250,14 @@ func Test_decodeComplex64_error_tabular(t *testing.T) {
 			42,
 			0,
 			ErrInvType,
-			"decodeComplex64: requires boolean value got int: invalid type",
+			"DecodeComplex64: requires boolean value got int: invalid type",
 		},
 		{
 			"invalid duration format",
 			"abc",
 			0,
 			ErrInvFormat,
-			"decodeComplex64: parsing string value to complex64: " +
+			"DecodeComplex64: parsing string value to complex64: " +
 				"invalid format",
 		},
 	}
@@ -1265,7 +1265,7 @@ func Test_decodeComplex64_error_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeComplex64(tc.have)
+			have, err := DecodeComplex64(tc.have)
 
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
@@ -1275,7 +1275,7 @@ func Test_decodeComplex64_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeComplex128_success_tabular(t *testing.T) {
+func Test_DecodeComplex128_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -1288,7 +1288,7 @@ func Test_decodeComplex128_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeComplex128(tc.have)
+			have, err := DecodeComplex128(tc.have)
 
 			// --- Then ---
 			assert.NoError(t, err)
@@ -1297,7 +1297,7 @@ func Test_decodeComplex128_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_decodeComplex128_error_tabular(t *testing.T) {
+func Test_DecodeComplex128_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -1311,14 +1311,14 @@ func Test_decodeComplex128_error_tabular(t *testing.T) {
 			42,
 			0,
 			ErrInvType,
-			"decodeComplex128: requires boolean value got int: invalid type",
+			"DecodeComplex128: requires boolean value got int: invalid type",
 		},
 		{
 			"invalid duration format",
 			"abc",
 			0,
 			ErrInvFormat,
-			"decodeComplex128: parsing string value to complex128: " +
+			"DecodeComplex128: parsing string value to complex128: " +
 				"invalid format",
 		},
 	}
@@ -1326,7 +1326,7 @@ func Test_decodeComplex128_error_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := decodeComplex128(tc.have)
+			have, err := DecodeComplex128(tc.have)
 
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
@@ -1334,4 +1334,25 @@ func Test_decodeComplex128_error_tabular(t *testing.T) {
 			assert.Equal(t, tc.want, have)
 		})
 	}
+}
+
+func Test_DecodeNil(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- When ---
+		have, err := DecodeNil(nil)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Nil(t, have)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- When ---
+		have, err := DecodeNil(42)
+
+		// --- Then ---
+		assert.ErrorIs(t, ErrInvType, err)
+		assert.ErrorEqual(t, "DecodeNil: requires nil value: invalid type", err)
+		assert.Nil(t, have)
+	})
 }

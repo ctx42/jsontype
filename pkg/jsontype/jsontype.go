@@ -18,30 +18,33 @@ var registry *Registry
 func init() {
 	registry = NewRegistry()
 
-	registry.Register(Int, ToAny(decodeInt))
-	registry.Register(Int8, ToAny(decodeInt8))
-	registry.Register(Int16, ToAny(decodeInt16))
-	registry.Register(Int32, ToAny(decodeInt32))
-	registry.Register(Rune, ToAny(decodeRune))
-	registry.Register(Int64, ToAny(decodeInt64))
-	registry.Register(UInt, ToAny(decodeUInt))
-	registry.Register(UInt8, ToAny(decodeUInt8))
-	registry.Register(Byte, ToAny(decodeByte))
-	registry.Register(UInt16, ToAny(decodeUInt16))
-	registry.Register(UInt32, ToAny(decodeUInt32))
-	registry.Register(UInt64, ToAny(decodeUInt64))
-	registry.Register(Float32, ToAny(decodeFloat32))
-	registry.Register(Float64, ToAny(decodeFloat64))
-	registry.Register(String, ToAny(decodeString))
-	registry.Register(Bool, ToAny(decodeBool))
-	registry.Register(Time, ToAny(decodeTime))
-	registry.Register(Duration, ToAny(decodeDuration))
-	registry.Register(Complex64, ToAny(decodeComplex64))
-	registry.Register(Complex128, ToAny(decodeComplex128))
+	registry.Register(Int, ToAny(DecodeInt))
+	registry.Register(Int8, ToAny(DecodeInt8))
+	registry.Register(Int16, ToAny(DecodeInt16))
+	registry.Register(Int32, ToAny(DecodeInt32))
+	registry.Register(Rune, ToAny(DecodeRune))
+	registry.Register(Int64, ToAny(DecodeInt64))
+	registry.Register(UInt, ToAny(DecodeUInt))
+	registry.Register(UInt8, ToAny(DecodeUInt8))
+	registry.Register(Byte, ToAny(DecodeByte))
+	registry.Register(UInt16, ToAny(DecodeUInt16))
+	registry.Register(UInt32, ToAny(DecodeUInt32))
+	registry.Register(UInt64, ToAny(DecodeUInt64))
+	registry.Register(Float32, ToAny(DecodeFloat32))
+	registry.Register(Float64, ToAny(DecodeFloat64))
+	registry.Register(String, ToAny(DecodeString))
+	registry.Register(Bool, ToAny(DecodeBool))
+	registry.Register(Time, ToAny(DecodeTime))
+	registry.Register(Duration, ToAny(DecodeDuration))
+	registry.Register(Complex64, ToAny(DecodeComplex64))
+	registry.Register(Complex128, ToAny(DecodeComplex128))
+	registry.Register(Nil, ToAny(DecodeNil))
 }
 
 // TypeName represents a type name.
 type TypeName string
+
+func (name TypeName) String() string { return string(name) }
 
 // List of types which can be encoded to JSON by [Value] and later on decoded
 // without losing the Go type in the process. The decoders for all the listed
@@ -67,6 +70,7 @@ const (
 	Duration   TypeName = "time.Duration"
 	Complex64  TypeName = "complex64"
 	Complex128 TypeName = "complex128"
+	Nil        TypeName = "nil"
 )
 
 // Package level sentinel errors.
@@ -126,18 +130,72 @@ func NewByte(val byte) *Value { return &Value{typ: Byte, val: val} }
 // NewRune returns new instance of [Value] representing a byte.
 func NewRune(val rune) *Value { return &Value{typ: Rune, val: val} }
 
+// NewValue returns an instance of [Value] based on the given argument. For
+// untyped nil it returns [Nil] type and nil. Returns an error when a [Decoder]
+// for the type has not been found.
+func NewValue(val any) (*Value, error) {
+	if val == nil {
+		return &Value{typ: Nil, val: nil}, nil
+	}
+	typ := TypeName(reflect.TypeOf(val).String())
+	if dec := registry.Decoder(typ); dec == nil {
+		return nil, fmt.Errorf("%w: %s", ErrUnkType, typ)
+	}
+	value := &Value{typ: typ, val: val}
+	return value, nil
+}
+
+// FromMap constructs an instance of [Value] from its map representation. It
+// expects the map to have the same structure as the one returned from
+// [Value.Map] method.
+func FromMap(m map[string]any) (val *Value, err error) {
+	var v any
+	var ok bool
+
+	if v, ok = keyValue("value", m); !ok {
+		return nil, fmt.Errorf("FromMap: missing value field: %w", ErrInvFormat)
+	}
+	if val, err = NewValue(v); err != nil {
+		return nil, fmt.Errorf("FromMap: %w", err)
+	}
+
+	if v, ok = keyValue("type", m); !ok {
+		return nil, fmt.Errorf("FromMap: missing type field: %w", ErrInvFormat)
+	}
+
+	var typ string
+	if typ, err = DecodeString(v); err != nil {
+		return nil, fmt.Errorf("FromMap: type field: %w", ErrInvFormat)
+	}
+
+	if TypeName(typ) != val.typ {
+		return nil, fmt.Errorf("FromMap: types do not match: %w", ErrInvValue)
+	}
+	return val, nil
+}
+
+// FromAny expects the argument to be `map[string]any` in the same format
+// [Value.Map] returns and constructs an instance of [Value] from it.
+func FromAny(v any) (*Value, error) {
+	if val, ok := v.(map[string]any); ok {
+		return FromMap(val)
+	}
+	return nil, fmt.Errorf("FromAny: %w", ErrInvType)
+}
+
 func (val *Value) GoType() TypeName { return val.typ }
 func (val *Value) GoValue() any     { return val.val }
+
+// Map returns map representation of the [Value].
+func (val *Value) Map() map[string]any {
+	return map[string]any{"type": val.typ.String(), "value": val.val}
+}
 
 func (val *Value) MarshalJSON() ([]byte, error) {
 	if val == nil || val.typ == "" {
 		return nil, ErrInvValue
 	}
-	data := map[string]any{
-		"type":  val.typ,
-		"value": val.val,
-	}
-	return json.Marshal(data)
+	return json.Marshal(val.Map())
 }
 
 func (val *Value) UnmarshalJSON(bytes []byte) error {

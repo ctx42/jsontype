@@ -74,7 +74,7 @@ err := json.Unmarshal(data, gType)
 
 fmt.Println(err)
 // Output:
-// decodeByte: requires float64 value in range of uint8: invalid range
+// DecodeByte: requires float64 value in range of uint8: invalid range
 ```
 
 ## Supported types

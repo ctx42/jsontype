@@ -48,5 +48,5 @@ func ExampleValue_UnmarshalJSON_safe() {
 
 	fmt.Println(err)
 	// Output:
-	// decodeByte: requires float64 value in range of uint8: invalid range
+	// DecodeByte: requires float64 value in range of uint8: invalid range
 }

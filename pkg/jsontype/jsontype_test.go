@@ -12,7 +12,18 @@ import (
 
 func Test_init(t *testing.T) {
 	assert.NotNil(t, registry)
-	assert.Len(t, 20, registry.reg)
+	assert.Len(t, 21, registry.reg)
+}
+
+func Test_TypeName_String(t *testing.T) {
+	// --- Given ---
+	name := TypeName("test")
+
+	// --- When ---
+	have := name.String()
+
+	// --- Then ---
+	assert.Equal(t, "test", have)
 }
 
 func Test_New(t *testing.T) {
@@ -221,6 +232,38 @@ func Test_NewRune(t *testing.T) {
 	assert.Equal(t, rune(42), have.val)
 }
 
+func Test_NewValue(t *testing.T) {
+	t.Run("nil", func(t *testing.T) {
+		// --- When ---
+		have, err := NewValue(nil)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Nil, have.typ)
+		assert.Nil(t, have.val)
+	})
+
+	t.Run("registered type", func(t *testing.T) {
+		// --- When ---
+		have, err := NewValue(42)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Int, have.typ)
+		assert.Equal(t, 42, have.val)
+	})
+
+	t.Run("error - unregistered type", func(t *testing.T) {
+		// --- When ---
+		have, err := NewValue(Value{})
+
+		// --- Then ---
+		assert.ErrorIs(t, ErrUnkType, err)
+		assert.ErrorEqual(t, "unknown type: jsontype.Value", err)
+		assert.Nil(t, have)
+	})
+}
+
 func Test_Value_GoType(t *testing.T) {
 	// --- Given ---
 	val := &Value{typ: String, val: "abc"}
@@ -293,6 +336,124 @@ func Test_Value_MarshalJSON(t *testing.T) {
 	})
 }
 
+func Test_FromMap(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		m := map[string]any{"type": "uint", "value": uint(42)}
+
+		// --- When ---
+		have, err := FromMap(m)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, UInt, have.typ)
+		assert.Equal(t, uint(42), have.val)
+	})
+
+	t.Run("error - missing value key", func(t *testing.T) {
+		// --- Given ---
+		m := map[string]any{"type": "uint"}
+
+		// --- When ---
+		have, err := FromMap(m)
+
+		// --- Then ---
+		assert.ErrorIs(t, ErrInvFormat, err)
+		wMsg := "FromMap: missing value field: invalid format"
+		assert.ErrorEqual(t, wMsg, err)
+		assert.Nil(t, have)
+	})
+
+	t.Run("error - unknown value key type", func(t *testing.T) {
+		// --- Given ---
+		m := map[string]any{"type": "uint", "value": Value{}}
+
+		// --- When ---
+		have, err := FromMap(m)
+
+		// --- Then ---
+		assert.ErrorIs(t, ErrUnkType, err)
+		assert.ErrorEqual(t, "FromMap: unknown type: jsontype.Value", err)
+		assert.Nil(t, have)
+	})
+
+	t.Run("error - missing type key", func(t *testing.T) {
+		// --- Given ---
+		m := map[string]any{"value": 42}
+
+		// --- When ---
+		have, err := FromMap(m)
+
+		// --- Then ---
+		assert.ErrorIs(t, ErrInvFormat, err)
+		assert.ErrorEqual(t, "FromMap: missing type field: invalid format", err)
+		assert.Nil(t, have)
+	})
+
+	t.Run("error - type key not a string", func(t *testing.T) {
+		// --- Given ---
+		m := map[string]any{"type": 44, "value": uint(42)}
+
+		// --- When ---
+		have, err := FromMap(m)
+
+		// --- Then ---
+		assert.ErrorIs(t, ErrInvFormat, err)
+		assert.ErrorEqual(t, "FromMap: type field: invalid format", err)
+		assert.Nil(t, have)
+	})
+
+	t.Run("error - types do not match", func(t *testing.T) {
+		// --- Given ---
+		m := map[string]any{"type": "int", "value": uint(42)}
+
+		// --- When ---
+		have, err := FromMap(m)
+
+		// --- Then ---
+		assert.ErrorIs(t, ErrInvValue, err)
+		assert.ErrorEqual(t, "FromMap: types do not match: invalid value", err)
+		assert.Nil(t, have)
+	})
+}
+
+func Test_FromAny(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		m := map[string]any{"type": "uint", "value": uint(42)}
+
+		// --- When ---
+		have, err := FromAny(m)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, UInt, have.typ)
+		assert.Equal(t, uint(42), have.val)
+	})
+
+	t.Run("error - not a map", func(t *testing.T) {
+		// --- When ---
+		have, err := FromAny(nil)
+
+		// --- Then ---
+		assert.ErrorIs(t, ErrInvType, err)
+		assert.ErrorEqual(t, "FromAny: invalid type", err)
+		assert.Nil(t, have)
+	})
+}
+
+func Test_Value_Map(t *testing.T) {
+	// --- Given ---
+	val := &Value{typ: UInt, val: uint(42)}
+
+	// --- When ---
+	have := val.Map()
+
+	// --- Then ---
+	want := map[string]any{"type": "uint", "value": uint(42)}
+	assert.Equal(t, want, have)
+}
+
 func Test_Value_UnmarshallJSON(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
@@ -306,6 +467,20 @@ func Test_Value_UnmarshallJSON(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, UInt8, val.typ)
 		assert.Equal(t, uint8(42), val.val)
+	})
+
+	t.Run("nil", func(t *testing.T) {
+		// --- Given ---
+		data := `{"type": "nil", "value": null}`
+		val := &Value{}
+
+		// --- When ---
+		err := val.UnmarshalJSON([]byte(data))
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Nil, val.typ)
+		assert.Nil(t, val.val)
 	})
 
 	t.Run("error - invalid JSON", func(t *testing.T) {
@@ -343,7 +518,7 @@ func Test_Value_UnmarshallJSON(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, ErrInvFormat, err)
-		wMsg := "decodeTime: parsing RFC3339 string value to time.Time: " +
+		wMsg := "DecodeTime: parsing RFC3339 string value to time.Time: " +
 			"invalid format"
 		assert.ErrorEqual(t, wMsg, err)
 	})
