@@ -1,2 +1,8 @@
+github.com/ctx42/convert v0.1.0 h1:8im+aV8Wvvbd2eD26QblH1R4dPKX5sS/XuSAT5EdgVY=
+github.com/ctx42/convert v0.1.0/go.mod h1:GGFkgZ/Wa/MRlqQkhWl1iBOli9/8PyrhjWGYz8nJBpA=
+github.com/ctx42/convert v0.2.0 h1:dBOZfp6p4yVmtRmC7Q0gjyTWC1aXzwRTZBJGtFo7p+4=
+github.com/ctx42/convert v0.2.0/go.mod h1:GGFkgZ/Wa/MRlqQkhWl1iBOli9/8PyrhjWGYz8nJBpA=
+github.com/ctx42/convert v0.3.0 h1:ErTQt7GogIMOID6+HJBXQoQqfeb0HuGWn4fSkUOh+yo=
+github.com/ctx42/convert v0.3.0/go.mod h1:GGFkgZ/Wa/MRlqQkhWl1iBOli9/8PyrhjWGYz8nJBpA=
 github.com/ctx42/testing v0.43.0 h1:xUeUuY6vfLjammu19KiJBJvQmrzQNMv5GBmaKEk59sw=
 github.com/ctx42/testing v0.43.0/go.mod h1:VHcxY4uhZQ8Lewevgmc9WHjJQc9CopJm9IAOTK5XbaM=

@@ -25,11 +25,11 @@ func Test_Registry_Register(t *testing.T) {
 		reg := NewRegistry()
 
 		// --- When ---
-		have := reg.Register("name", dec)
+		have := reg.Register(Int, dec)
 
 		// --- Then ---
 		assert.Nil(t, have)
-		val, _ := assert.HasKey(t, "name", reg.reg)
+		val, _ := assert.HasKey(t, Int, reg.reg)
 		assert.Same(t, dec, val)
 	})
 
@@ -37,15 +37,28 @@ func Test_Registry_Register(t *testing.T) {
 		// --- Given ---
 		dec0 := func(value any) (any, error) { return value, nil }
 		dec1 := func(value any) (any, error) { return value, nil }
-		reg := &Registry{reg: map[TypeName]Decoder{"name": dec0}}
+		reg := NewRegistry()
+		reg.Register(Int, dec0)
 
 		// --- When ---
-		have := reg.Register("name", dec1)
+		have := reg.Register(Int, dec1)
 
 		// --- Then ---
 		assert.Same(t, dec0, have)
-		val, _ := assert.HasKey(t, "name", reg.reg)
+		val, _ := assert.HasKey(t, Int, reg.reg)
 		assert.Same(t, dec1, val)
+	})
+
+	t.Run("register nil decoder", func(t *testing.T) {
+		// --- Given ---
+		reg := NewRegistry()
+
+		// --- When ---
+		have := reg.Register(Int, nil)
+
+		// --- Then ---
+		assert.Nil(t, have)
+		assert.Len(t, 0, reg.reg)
 	})
 }
 
@@ -53,10 +66,11 @@ func Test_Registry_Decoder(t *testing.T) {
 	t.Run("registered", func(t *testing.T) {
 		// --- Given ---
 		dec := func(value any) (any, error) { return value, nil }
-		reg := &Registry{reg: map[TypeName]Decoder{"name": dec}}
+		reg := NewRegistry()
+		reg.Register(Int, dec)
 
 		// --- When ---
-		have := reg.Decoder("name")
+		have := reg.Decoder(Int)
 
 		// --- Then ---
 		assert.Same(t, dec, have)
@@ -67,7 +81,7 @@ func Test_Registry_Decoder(t *testing.T) {
 		reg := NewRegistry()
 
 		// --- When ---
-		have := reg.Decoder("name")
+		have := reg.Decoder(Int)
 
 		// --- Then ---
 		assert.Nil(t, have)

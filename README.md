@@ -3,53 +3,17 @@
 ![Tests](https://github.com/ctx42/jsontype/actions/workflows/go.yml/badge.svg?branch=master)
 
 <!-- TOC -->
-  * [Marshaling and Unmarshaling](#marshaling-and-unmarshaling)
   * [Installation](#installation)
-  * [Validation](#validation)
-  * [Supported types](#supported-types)
+  * [Example](#example)
+  * [Custom Decoders](#custom-decoders)
 <!-- TOC -->
 
-`jsontype` is small Go module that preserves Go types when marshaling to JSON 
-by embedding the type information in the JSON itself.
+`jsontype` is a small Go module that preserves Go types when marshaling to JSON.
+It embeds type information directly into the JSON alongside the value.
 
-## Marshaling and Unmarshaling
-
-The workhorse of the module is the `jsontype.Value` type which implements
-`json.Marshaler` and `json.Unmarshaler` interfaces.
-
-```go
-// Create a `jsontype.Value` and marshall it.
-jType := jsontype.New(uint(42))
-data, _ := json.Marshal(jType)
-fmt.Printf("  marshalled: %s\n", string(data))
-
-// Unmarshall the value and show its Go type.
-gType := &jsontype.Value{}
-_ = json.Unmarshal(data, gType)
-fmt.Printf("unmarshalled: %[1]v (%[1]T)\n", gType.GoValue())
-
-// Output:
-//   marshalled: {"type":"uint","value":42}
-// unmarshalled: 42 (uint)
-```
-
-The module supports also some of the builtin types.
-
-```go
-// Create a `jsontype.Value` and marshall it.
-jType := jsontype.New(time.Date(2000, 1, 2, 3, 4, 5, 600000000, time.UTC))
-data, _ := json.Marshal(jType)
-fmt.Printf("  marshalled: %s\n", string(data))
-
-// Unmarshall the value and show its Go type.
-gType := &jsontype.Value{}
-_ = json.Unmarshal(data, gType)
-fmt.Printf("unmarshalled: %[1]v (%[1]T)\n", gType.GoValue())
-
-// Output:
-// marshalled: {"type":"time.Time","value":"2000-01-02T03:04:05.6Z"}
-// unmarshalled: 2000-01-02 03:04:05.6 +0000 UTC (time.Time)
-```
+This is useful in scenarios where you marshal and unmarshal JSON to composite
+types, such as `map[string]any`. It ensures that Go types are preserved during
+a round-trip.
 
 ## Installation
 
@@ -59,45 +23,84 @@ To use `jsontype` in your Go project, install it with:
 go get github.com/ctx42/jsontype
 ```
 
-## Validation
+## Example
 
-When unmarshaling `jsontype` checks if the value set in JSON is valid in
-context the Go type. It will return an error when the value is of invalid type,
-is in an invalid format, is in an invalid range for the Go type. Blow example
-shows what happens when you try unmarshal too big value to `byte`.
+Create a `Value` instance encapsulating the value and its type when marshaled
+to JSON.
 
 ```go
-data := []byte(`{"type":"byte","value":99999}`)
+jType := jsontype.New(uint(42))
+data, _ := json.Marshal(jType)
+
+fmt.Println(string(data))
+// Output:
+// {"type":"uint","value":42}
+```
+
+Later when unmarshalling the library is looking at the `type` field, finds the
+matching `Decoder` which casts the `value` to specific Go type.
+
+```go
+data := []byte(`{"type": "uint", "value": 42}`)
+
+gType := &jsontype.Value{}
+_ = json.Unmarshal(data, gType)
+
+fmt.Printf("%[1]v (%[1]T)\n", gType.GoValue())
+// Output:
+// 42 (uint)
+```
+
+The `Decoders` for most built-in types are provided by the module.
+
+- `int`
+- `int8`
+- `int16`
+- `int32`
+- `int64`
+- `uint`
+- `uint8`
+- `uint16`
+- `uint32`
+- `uint64`
+- `float32`
+- `float64`
+- `byte`
+- `rune`
+- `string`
+- `bool`
+- `time.Duration`
+- `time.Time`
+- `nil`
+
+## Custom Decoders
+
+You may register custom `Decoder` for a type.
+
+```go
+// Custom decoder for the "seconds" type.
+dec := func (value float64) (time.Duration, error) {
+return time.Duration(value) * time.Second, nil
+}
+
+// Register decoder.
+jsontype.Register("seconds", jsontype.FromConv(dec))
+
+// Custom type named "seconds" representing duration in seconds.
+data := []byte(`{"type": "seconds", "value": 42}`)
 
 gType := &jsontype.Value{}
 err := json.Unmarshal(data, gType)
 
-fmt.Println(err)
+_ = err // Check error.
+
+fmt.Printf("unmarshalled: %[1]v (%[1]T)\n", gType.GoValue())
 // Output:
-// DecodeByte: requires float64 value in range of uint8: invalid range
+// unmarshalled: 42s (time.Duration)
 ```
 
-## Supported types
-
-```go
-int
-int8
-int16
-int32
-rune
-int64
-uint
-uint8
-byte
-uint16
-uint32
-uint64
-float32
-float64
-string
-bool
-time.Time
-time.Duration
-complex64
-complex128
-```
+The registered decoder must return an error when conversion a value from a
+JSON type to GO type would result in loss of precision, overflow, underflow or
+conversion is simply impossible. Similarly to how the
+[http://github.com/ctx42/convert](http://github.com/ctx42/convert) converter
+functions work.
