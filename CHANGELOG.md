@@ -1,3 +1,6 @@
+## v0.3.0 (Fri, 19 Dec 2025 12:11:27 UTC)
+- Use `github.com/ctx42/convert` for type conversions.
+
 ## v0.2.0 (Sat, 29 Nov 2025 21:15:08 UTC)
 - Improve ease of use by adding new constructor functions.
 
