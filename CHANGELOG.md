@@ -1,3 +1,6 @@
+## v0.4.0 (Sat, 20 Dec 2025 22:06:30 UTC)
+- Use `github.com/ctx42/convert` for type conversions.
+
 ## v0.3.0 (Fri, 19 Dec 2025 12:11:27 UTC)
 - Use `github.com/ctx42/convert` for type conversions.
 
