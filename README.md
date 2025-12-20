@@ -5,11 +5,12 @@
 <!-- TOC -->
   * [Installation](#installation)
   * [Example](#example)
-  * [Custom Decoders](#custom-decoders)
+  * [Type Registry](#type-registry)
+  * [Custom Converters](#custom-converters)
 <!-- TOC -->
 
-`jsontype` is a small Go module that preserves Go types when marshaling to JSON.
-It embeds type information directly into the JSON alongside the value.
+`jsontype` is a small Go module that preserves Go types when marshaling values 
+to JSON. It embeds type information directly into the JSON alongside the value.
 
 This is useful in scenarios where you marshal and unmarshal JSON to composite
 types, such as `map[string]any`. It ensures that Go types are preserved during
@@ -17,7 +18,7 @@ a round-trip.
 
 ## Installation
 
-To use `jsontype` in your Go project, install it with:
+Install using `go get`:
 
 ```bash
 go get github.com/ctx42/jsontype
@@ -25,8 +26,7 @@ go get github.com/ctx42/jsontype
 
 ## Example
 
-Create a `Value` instance encapsulating the value and its type when marshaled
-to JSON.
+Create a `Value` instance encapsulating the value and its type.
 
 ```go
 jType := jsontype.New(uint(42))
@@ -38,7 +38,8 @@ fmt.Println(string(data))
 ```
 
 Later when unmarshalling the library is looking at the `type` field, finds the
-matching `Decoder` which casts the `value` to specific Go type.
+matching converter in the package-level registry and converts the value. 
+
 
 ```go
 data := []byte(`{"type": "uint", "value": 42}`)
@@ -51,7 +52,9 @@ fmt.Printf("%[1]v (%[1]T)\n", gType.GoValue())
 // 42 (uint)
 ```
 
-The `Decoders` for most built-in types are provided by the module.
+## Type Registry
+
+The package-level registry provides converters for the following types: 
 
 - `int`
 - `int8`
@@ -73,18 +76,18 @@ The `Decoders` for most built-in types are provided by the module.
 - `time.Time`
 - `nil`
 
-## Custom Decoders
+## Custom Converters
 
-You may register custom `Decoder` for a type.
+You may register a custom converter for your custom type.
 
 ```go
-// Custom decoder for the "seconds" type.
-dec := func (value float64) (time.Duration, error) {
-return time.Duration(value) * time.Second, nil
+// Custom converter for a type named "seconds" representing duration in seconds.
+cnv := func(value float64) (time.Duration, error) {
+    return time.Duration(value) * time.Second, nil
 }
 
-// Register decoder.
-jsontype.Register("seconds", jsontype.FromConv(dec))
+// Register converter.
+jsontype.Register("seconds", convert.ToAnyAny(cnv))
 
 // Custom type named "seconds" representing duration in seconds.
 data := []byte(`{"type": "seconds", "value": 42}`)
@@ -99,8 +102,8 @@ fmt.Printf("unmarshalled: %[1]v (%[1]T)\n", gType.GoValue())
 // unmarshalled: 42s (time.Duration)
 ```
 
-The registered decoder must return an error when conversion a value from a
-JSON type to GO type would result in loss of precision, overflow, underflow or
-conversion is simply impossible. Similarly to how the
-[http://github.com/ctx42/convert](http://github.com/ctx42/convert) converter
+The registered converter must return an error when conversion of a value from a
+JSON type to Go type would result in loss of precision, overflow, underflow or
+conversion is simply impossible. The same way how the
+[github.com/ctx42/convert](http://github.com/ctx42/convert) converter
 functions work.

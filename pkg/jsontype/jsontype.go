@@ -10,53 +10,52 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/ctx42/convert/pkg/xcast"
+	"github.com/ctx42/convert/pkg/convert"
 )
 
 // registry is package level [Registry].
 var registry *Registry
 
-// Register registers [Decoder] for a given type name.
-func Register(typ string, dec Decoder) Decoder {
-	if dec == nil {
+// Register registers converter for a given type name.
+func Register(typ string, cnv convert.AnyToAny) convert.AnyToAny {
+	if cnv == nil {
 		return nil
 	}
-	return registry.Register(typ, dec)
+	return registry.Register(typ, cnv)
 }
 
 func init() {
 	registry = NewRegistry()
 
-	registry.Register(Byte, FromConv(xcast.Float64ToByte))
-	registry.Register(Uint8, FromConv(xcast.Float64ToUint8))
-	registry.Register(Uint16, FromConv(xcast.Float64ToUint16))
-	registry.Register(Uint32, FromConv(xcast.Float64ToUint32))
-	registry.Register(Uint64, FromConv(xcast.Float64ToUint64))
-	registry.Register(Uint, FromConv(xcast.Float64ToUint))
+	registry.Register(Byte, convert.ToAnyAny(convert.Float64ToByte))
+	registry.Register(Uint8, convert.ToAnyAny(convert.Float64ToUint8))
+	registry.Register(Uint16, convert.ToAnyAny(convert.Float64ToUint16))
+	registry.Register(Uint32, convert.ToAnyAny(convert.Float64ToUint32))
+	registry.Register(Uint64, convert.ToAnyAny(convert.Float64ToUint64))
+	registry.Register(Uint, convert.ToAnyAny(convert.Float64ToUint))
 
-	registry.Register(Int8, FromConv(xcast.Float64ToInt8))
-	registry.Register(Int16, FromConv(xcast.Float64ToInt16))
-	registry.Register(Rune, FromConv(xcast.Float64ToRune))
-	registry.Register(Int32, FromConv(xcast.Float64ToInt32))
-	registry.Register(Int64, FromConv(xcast.Float64ToInt64))
-	registry.Register(Int, FromConv(xcast.Float64ToInt))
+	registry.Register(Int8, convert.ToAnyAny(convert.Float64ToInt8))
+	registry.Register(Int16, convert.ToAnyAny(convert.Float64ToInt16))
+	registry.Register(Rune, convert.ToAnyAny(convert.Float64ToRune))
+	registry.Register(Int32, convert.ToAnyAny(convert.Float64ToInt32))
+	registry.Register(Int64, convert.ToAnyAny(convert.Float64ToInt64))
+	registry.Register(Int, convert.ToAnyAny(convert.Float64ToInt))
 
-	registry.Register(Float32, FromConv(xcast.Float64ToFloat32))
-	registry.Register(Float64, FromConv(xcast.Float64ToFloat64))
+	registry.Register(Float32, convert.ToAnyAny(convert.Float64ToFloat32))
+	registry.Register(Float64, convert.ToAnyAny(convert.Float64ToFloat64))
 
-	registry.Register(Time, FromConv(xcast.StringToTime(time.RFC3339Nano)))
-	registry.Register(Duration, FromConv(xcast.StringToDuration))
+	cnv := convert.StringToTime(time.RFC3339Nano)
+	registry.Register(Time, convert.ToAnyAny(cnv))
+	registry.Register(Duration, convert.ToAnyAny(convert.StringToDuration))
 
-	registry.Register(String, FromConv(xcast.StringToString))
-	registry.Register(Bool, FromConv(xcast.BoolToBool))
-	registry.Register(Duration, FromConv(xcast.StringToDuration))
+	registry.Register(String, convert.ToAnyAny(convert.StringToString))
+	registry.Register(Bool, convert.ToAnyAny(convert.BoolToBool))
+	registry.Register(Duration, convert.ToAnyAny(convert.StringToDuration))
 
-	registry.Register(Nil, DecodeNil)
+	registry.Register(Nil, NilConverter)
 }
 
-// List of types which can be encoded to JSON by [Value] and later on decoded
-// without losing the Go type in the process. The decoders for all the listed
-// types are by default added to the global registry in init function.
+// List of type names supported by the package out of the box.
 const (
 	Int   = "int"
 	Int16 = "int16"
@@ -82,16 +81,6 @@ const (
 	Nil      = "nil"
 )
 
-// Decoder is a function that knows how to decode a JSON type to a Go type.
-type Decoder func(value any) (any, error)
-
-// Converter represents a function that attempts lossless conversion from a
-// source value of type From to a target value of type To. On success, it
-// returns the converted value and a nil error. On failure (e.g., truncation,
-// overflow, or semantic loss), it returns the zero value of To along with a
-// non-nil error describing the issue.
-type Converter[From, To any] func(from From) (to To, err error)
-
 // Value represents a value and its type.
 type Value struct {
 	typ string // Name of the type.
@@ -105,8 +94,8 @@ func New[T any](value T) *Value {
 }
 
 // NewValue works like [New], but it supports untyped nil as the value and
-// checks if the type has a registered decoder. Returns error when the type has
-// no registered decoder.
+// checks if the type has a registered converter. Returns error when the type
+// has no registered converter.
 func NewValue(val any) (*Value, error) { return newValue(registry, val) }
 
 func newValue(reg *Registry, value any) (*Value, error) {
@@ -114,8 +103,8 @@ func newValue(reg *Registry, value any) (*Value, error) {
 		return &Value{typ: Nil, val: nil}, nil
 	}
 	typ := reflect.TypeOf(value).String()
-	if dec := reg.Decoder(typ); dec == nil {
-		return nil, fmt.Errorf("%w: %s", xcast.ErrUnkType, typ)
+	if cnv := reg.Converter(typ); cnv == nil {
+		return nil, fmt.Errorf("%w: %s", convert.ErrUnkType, typ)
 	}
 	return &Value{typ: typ, val: value}, nil
 }
@@ -130,7 +119,7 @@ func (val *Value) Map() map[string]any {
 
 func (val *Value) MarshalJSON() ([]byte, error) {
 	if val == nil || val.typ == "" {
-		return nil, xcast.ErrInvValue
+		return nil, convert.ErrInvValue
 	}
 	return json.Marshal(val.Map())
 }
@@ -149,12 +138,12 @@ func (val *Value) unmarshalJSON(reg *Registry, bytes []byte) error {
 	}
 
 	var err error
-	dec := reg.Decoder(tmp.Type)
-	if dec == nil {
-		return fmt.Errorf("%w: %s", xcast.ErrUnkType, tmp.Type)
+	cnv := reg.Converter(tmp.Type)
+	if cnv == nil {
+		return fmt.Errorf("%w: %s", convert.ErrUnkType, tmp.Type)
 	}
 	val.typ = tmp.Type
-	if val.val, err = dec(tmp.Value); err != nil {
+	if val.val, err = cnv(tmp.Value); err != nil {
 		return fmt.Errorf("jsontype: %w", err)
 	}
 	return nil
@@ -169,7 +158,7 @@ func FromMap(m map[string]any) (val *Value, err error) {
 
 	if v, ok = keyValue("value", m); !ok {
 		format := "FromMap: missing value field: %w"
-		return nil, fmt.Errorf(format, xcast.ErrInvFormat)
+		return nil, fmt.Errorf(format, convert.ErrInvFormat)
 	}
 	if val, err = NewValue(v); err != nil {
 		return nil, fmt.Errorf("FromMap: %w", err)
@@ -177,18 +166,18 @@ func FromMap(m map[string]any) (val *Value, err error) {
 
 	if v, ok = keyValue("type", m); !ok {
 		format := "FromMap: missing type field: %w"
-		return nil, fmt.Errorf(format, xcast.ErrInvFormat)
+		return nil, fmt.Errorf(format, convert.ErrInvFormat)
 	}
 
 	var typ string
 	if typ, ok = v.(string); !ok {
 		format := "FromMap: type field: %w"
-		return nil, fmt.Errorf(format, xcast.ErrInvFormat)
+		return nil, fmt.Errorf(format, convert.ErrInvFormat)
 	}
 
 	if typ != val.typ {
 		format := "FromMap: types do not match: %w"
-		return nil, fmt.Errorf(format, xcast.ErrInvValue)
+		return nil, fmt.Errorf(format, convert.ErrInvValue)
 	}
 	return val, nil
 }
@@ -199,5 +188,5 @@ func FromMapAny(v any) (*Value, error) {
 	if val, ok := v.(map[string]any); ok {
 		return FromMap(val)
 	}
-	return nil, fmt.Errorf("FromMapAny: %w", xcast.ErrInvType)
+	return nil, fmt.Errorf("FromMapAny: %w", convert.ErrInvType)
 }

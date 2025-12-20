@@ -21,35 +21,35 @@ func Test_NewRegistry(t *testing.T) {
 func Test_Registry_Register(t *testing.T) {
 	t.Run("register not registered", func(t *testing.T) {
 		// --- Given ---
-		dec := func(value any) (any, error) { return value, nil }
+		cnv := func(value any) (any, error) { return value, nil }
 		reg := NewRegistry()
 
 		// --- When ---
-		have := reg.Register(Int, dec)
+		have := reg.Register(Int, cnv)
 
 		// --- Then ---
 		assert.Nil(t, have)
 		val, _ := assert.HasKey(t, Int, reg.reg)
-		assert.Same(t, dec, val)
+		assert.Same(t, cnv, val)
 	})
 
 	t.Run("register not registered", func(t *testing.T) {
 		// --- Given ---
-		dec0 := func(value any) (any, error) { return value, nil }
-		dec1 := func(value any) (any, error) { return value, nil }
+		cnv0 := func(value any) (any, error) { return value, nil }
+		cnv1 := func(value any) (any, error) { return value, nil }
 		reg := NewRegistry()
-		reg.Register(Int, dec0)
+		reg.Register(Int, cnv0)
 
 		// --- When ---
-		have := reg.Register(Int, dec1)
+		have := reg.Register(Int, cnv1)
 
 		// --- Then ---
-		assert.Same(t, dec0, have)
+		assert.Same(t, cnv0, have)
 		val, _ := assert.HasKey(t, Int, reg.reg)
-		assert.Same(t, dec1, val)
+		assert.Same(t, cnv1, val)
 	})
 
-	t.Run("register nil decoder", func(t *testing.T) {
+	t.Run("register nil converter", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
 
@@ -62,18 +62,18 @@ func Test_Registry_Register(t *testing.T) {
 	})
 }
 
-func Test_Registry_Decoder(t *testing.T) {
+func Test_Registry_Converter(t *testing.T) {
 	t.Run("registered", func(t *testing.T) {
 		// --- Given ---
-		dec := func(value any) (any, error) { return value, nil }
+		cnv := func(value any) (any, error) { return value, nil }
 		reg := NewRegistry()
-		reg.Register(Int, dec)
+		reg.Register(Int, cnv)
 
 		// --- When ---
-		have := reg.Decoder(Int)
+		have := reg.Converter(Int)
 
 		// --- Then ---
-		assert.Same(t, dec, have)
+		assert.Same(t, cnv, have)
 	})
 
 	t.Run("not registered", func(t *testing.T) {
@@ -81,7 +81,7 @@ func Test_Registry_Decoder(t *testing.T) {
 		reg := NewRegistry()
 
 		// --- When ---
-		have := reg.Decoder(Int)
+		have := reg.Converter(Int)
 
 		// --- Then ---
 		assert.Nil(t, have)

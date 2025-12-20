@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ctx42/convert/pkg/xcast"
+	"github.com/ctx42/convert/pkg/convert"
 	"github.com/ctx42/testing/pkg/assert"
 	"github.com/ctx42/testing/pkg/dump"
 	"github.com/ctx42/testing/pkg/must"
@@ -20,45 +20,45 @@ func Test_init(t *testing.T) {
 }
 
 func Test_Register(t *testing.T) {
-	t.Run("new decoder", func(t *testing.T) {
+	t.Run("new converter", func(t *testing.T) {
 		// --- Given ---
-		dec := func(any) (any, error) { return nil, nil }
+		cnv := func(any) (any, error) { return nil, nil }
 		name := t.Name()
 
 		// --- When ---
-		have := Register(name, dec)
+		have := Register(name, cnv)
 
 		// --- Then ---
 		assert.Nil(t, have)
-		assert.Same(t, dec, registry.reg[name])
+		assert.Same(t, cnv, registry.reg[name])
 	})
 
-	t.Run("overwrite existing decoder", func(t *testing.T) {
+	t.Run("overwrite existing converter", func(t *testing.T) {
 		// --- Given ---
-		dec0 := func(any) (any, error) { return nil, nil }
-		dec1 := func(any) (any, error) { return nil, nil }
+		cnv0 := func(any) (any, error) { return nil, nil }
+		cnv1 := func(any) (any, error) { return nil, nil }
 		name := t.Name()
-		Register(name, dec0)
+		Register(name, cnv0)
 
 		// --- When ---
-		have := Register(name, dec1)
+		have := Register(name, cnv1)
 
 		// --- Then ---
-		assert.Same(t, dec0, have)
+		assert.Same(t, cnv0, have)
 	})
 
-	t.Run("nil decoder is nop", func(t *testing.T) {
+	t.Run("nil converter is nop", func(t *testing.T) {
 		// --- Given ---
-		dec := func(any) (any, error) { return nil, nil }
+		cnv := func(any) (any, error) { return nil, nil }
 		name := t.Name()
-		Register(name, dec)
+		Register(name, cnv)
 
 		// --- When ---
 		have := Register(name, nil)
 
 		// --- Then ---
 		assert.Nil(t, have)
-		assert.Same(t, dec, registry.reg[name])
+		assert.Same(t, cnv, registry.reg[name])
 	})
 }
 
@@ -282,7 +282,7 @@ func Test_NewValue(t *testing.T) {
 		have, err := NewValue(Value{})
 
 		// --- Then ---
-		assert.ErrorIs(t, xcast.ErrUnkType, err)
+		assert.ErrorIs(t, convert.ErrUnkType, err)
 		assert.ErrorEqual(t, "unknown type: jsontype.Value", err)
 		assert.Nil(t, have)
 	})
@@ -355,7 +355,7 @@ func Test_Value_MarshalJSON(t *testing.T) {
 		have, err := val.MarshalJSON()
 
 		// --- Then ---
-		assert.ErrorIs(t, xcast.ErrInvValue, err)
+		assert.ErrorIs(t, convert.ErrInvValue, err)
 		assert.Nil(t, have)
 	})
 
@@ -367,7 +367,7 @@ func Test_Value_MarshalJSON(t *testing.T) {
 		have, err := val.MarshalJSON()
 
 		// --- Then ---
-		assert.ErrorIs(t, xcast.ErrInvValue, err)
+		assert.ErrorIs(t, convert.ErrInvValue, err)
 		assert.Nil(t, have)
 	})
 
@@ -434,7 +434,7 @@ func Test_Value_UnmarshallJSON(t *testing.T) {
 		err := val.UnmarshalJSON([]byte(data))
 
 		// --- Then ---
-		assert.ErrorIs(t, xcast.ErrUnkType, err)
+		assert.ErrorIs(t, convert.ErrUnkType, err)
 		assert.ErrorEqual(t, "unknown type: unknown", err)
 	})
 
@@ -447,7 +447,7 @@ func Test_Value_UnmarshallJSON(t *testing.T) {
 		err := val.UnmarshalJSON([]byte(data))
 
 		// --- Then ---
-		assert.ErrorIs(t, xcast.ErrInvValue, err)
+		assert.ErrorIs(t, convert.ErrInvValue, err)
 		wMsg := `jsontype: parsing "abc" string as ` +
 			`"2006-01-02T15:04:05.999999999Z07:00" time layout: invalid value`
 		assert.ErrorEqual(t, wMsg, err)
@@ -476,7 +476,7 @@ func Test_FromMap(t *testing.T) {
 		have, err := FromMap(m)
 
 		// --- Then ---
-		assert.ErrorIs(t, xcast.ErrInvFormat, err)
+		assert.ErrorIs(t, convert.ErrInvFormat, err)
 		wMsg := "FromMap: missing value field: invalid format"
 		assert.ErrorEqual(t, wMsg, err)
 		assert.Nil(t, have)
@@ -490,7 +490,7 @@ func Test_FromMap(t *testing.T) {
 		have, err := FromMap(m)
 
 		// --- Then ---
-		assert.ErrorIs(t, xcast.ErrUnkType, err)
+		assert.ErrorIs(t, convert.ErrUnkType, err)
 		assert.ErrorEqual(t, "FromMap: unknown type: jsontype.Value", err)
 		assert.Nil(t, have)
 	})
@@ -503,7 +503,7 @@ func Test_FromMap(t *testing.T) {
 		have, err := FromMap(m)
 
 		// --- Then ---
-		assert.ErrorIs(t, xcast.ErrInvFormat, err)
+		assert.ErrorIs(t, convert.ErrInvFormat, err)
 		assert.ErrorEqual(t, "FromMap: missing type field: invalid format", err)
 		assert.Nil(t, have)
 	})
@@ -516,7 +516,7 @@ func Test_FromMap(t *testing.T) {
 		have, err := FromMap(m)
 
 		// --- Then ---
-		assert.ErrorIs(t, xcast.ErrInvFormat, err)
+		assert.ErrorIs(t, convert.ErrInvFormat, err)
 		assert.ErrorEqual(t, "FromMap: type field: invalid format", err)
 		assert.Nil(t, have)
 	})
@@ -529,7 +529,7 @@ func Test_FromMap(t *testing.T) {
 		have, err := FromMap(m)
 
 		// --- Then ---
-		assert.ErrorIs(t, xcast.ErrInvValue, err)
+		assert.ErrorIs(t, convert.ErrInvValue, err)
 		assert.ErrorEqual(t, "FromMap: types do not match: invalid value", err)
 		assert.Nil(t, have)
 	})
@@ -554,7 +554,7 @@ func Test_FromMapAny(t *testing.T) {
 		have, err := FromMapAny(nil)
 
 		// --- Then ---
-		assert.ErrorIs(t, xcast.ErrInvType, err)
+		assert.ErrorIs(t, convert.ErrInvType, err)
 		assert.ErrorEqual(t, "FromMapAny: invalid type", err)
 		assert.Nil(t, have)
 	})

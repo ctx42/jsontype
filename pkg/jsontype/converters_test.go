@@ -6,14 +6,14 @@ package jsontype
 import (
 	"testing"
 
-	"github.com/ctx42/convert/pkg/xcast"
+	"github.com/ctx42/convert/pkg/convert"
 	"github.com/ctx42/testing/pkg/assert"
 )
 
-func Test_DecodeNil(t *testing.T) {
+func Test_NilConverter(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- When ---
-		have, err := DecodeNil(nil)
+		have, err := NilConverter(nil)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -22,11 +22,11 @@ func Test_DecodeNil(t *testing.T) {
 
 	t.Run("error", func(t *testing.T) {
 		// --- When ---
-		have, err := DecodeNil(42)
+		have, err := NilConverter(42)
 
 		// --- Then ---
-		assert.ErrorIs(t, xcast.ErrInvType, err)
-		wMsg := "DecodeNil: requires a nil value: invalid type"
+		assert.ErrorIs(t, convert.ErrInvType, err)
+		wMsg := "NilConverter: requires a nil value: invalid type"
 		assert.ErrorEqual(t, wMsg, err)
 		assert.Nil(t, have)
 	})

@@ -4,4 +4,4 @@ go 1.25
 
 require github.com/ctx42/testing v0.43.0
 
-require github.com/ctx42/convert v0.3.0 // indirect
+require github.com/ctx42/convert v0.6.0 // indirect

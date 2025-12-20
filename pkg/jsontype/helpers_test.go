@@ -4,62 +4,10 @@
 package jsontype
 
 import (
-	"errors"
 	"testing"
 
-	"github.com/ctx42/convert/pkg/xcast"
 	"github.com/ctx42/testing/pkg/assert"
 )
-
-func Test_ToAny(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
-		// --- Given ---
-		fn := func(value any) (int, error) { return value.(int), nil }
-
-		// --- When ---
-		have, err := ToAny(fn)(42)
-
-		// --- Then ---
-		assert.NoError(t, err)
-		assert.Equal(t, 42, have)
-	})
-
-	t.Run("returns error", func(t *testing.T) {
-		// --- Given ---
-		ErrTst := errors.New("err")
-		fn := func(value any) (int, error) { return 0, ErrTst }
-
-		// --- When ---
-		have, err := ToAny(fn)(42)
-
-		// --- Then ---
-		assert.Same(t, ErrTst, err)
-		assert.Equal(t, 0, have)
-	})
-}
-
-func Test_FromConv(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
-		// --- When ---
-		dec := FromConv(xcast.Float64ToInt)
-
-		// --- Then ---
-		have, err := dec(float64(42))
-		assert.NoError(t, err)
-		assert.Equal(t, 42, have)
-	})
-
-	t.Run("invalid `from` type", func(t *testing.T) {
-		// --- When ---
-		dec := FromConv(xcast.Float64ToInt)
-
-		// --- Then ---
-		have, err := dec(42)
-		assert.ErrorIs(t, xcast.ErrInvType, err)
-		assert.ErrorEqual(t, "invalid type: expected float64, got int", err)
-		assert.Equal(t, 0, have)
-	})
-}
 
 func Test_keyValue(t *testing.T) {
 	t.Run("key exists", func(t *testing.T) {
