@@ -54,7 +54,7 @@ func ExampleValue_UnmarshalJSON_safe() {
 
 	fmt.Println(err)
 	// Output:
-	// jsontype: float64 value out of range for uint8
+	// jsontype: value out of range: from float64 to uint8
 }
 
 func ExampleRegister_custom() {

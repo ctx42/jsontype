@@ -448,8 +448,7 @@ func Test_Value_UnmarshallJSON(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvValue, err)
-		wMsg := `jsontype: parsing "abc" string as ` +
-			`"2006-01-02T15:04:05.999999999Z07:00" time layout: invalid value`
+		wMsg := "jsontype: invalid value: from string to time.Time"
 		assert.ErrorEqual(t, wMsg, err)
 	})
 }
