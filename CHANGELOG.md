@@ -1,3 +1,6 @@
+## v0.4.1 (Tue, 27 Jan 2026 16:10:49 UTC)
+- chore: Update dependencies and tests.
+
 ## v0.4.0 (Sat, 20 Dec 2025 22:06:30 UTC)
 - Use `github.com/ctx42/convert` for type conversions.
 
