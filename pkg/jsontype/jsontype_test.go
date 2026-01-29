@@ -277,13 +277,13 @@ func Test_NewValue(t *testing.T) {
 		assert.Equal(t, 42, have.val)
 	})
 
-	t.Run("error - unregistered type", func(t *testing.T) {
+	t.Run("error - unsupported type", func(t *testing.T) {
 		// --- When ---
 		have, err := NewValue(Value{})
 
 		// --- Then ---
-		assert.ErrorIs(t, convert.ErrUnkType, err)
-		assert.ErrorEqual(t, "unknown type: jsontype.Value", err)
+		assert.ErrorIs(t, convert.ErrUnsType, err)
+		assert.ErrorEqual(t, "unsupported type: jsontype.Value", err)
 		assert.Nil(t, have)
 	})
 }
@@ -425,7 +425,7 @@ func Test_Value_UnmarshallJSON(t *testing.T) {
 		assert.ErrorContain(t, "invalid character", err)
 	})
 
-	t.Run("error - unknown type", func(t *testing.T) {
+	t.Run("error - unsupported type", func(t *testing.T) {
 		// --- Given ---
 		data := `{"type": "unknown", "value": 42}`
 		val := &Value{}
@@ -434,8 +434,8 @@ func Test_Value_UnmarshallJSON(t *testing.T) {
 		err := val.UnmarshalJSON([]byte(data))
 
 		// --- Then ---
-		assert.ErrorIs(t, convert.ErrUnkType, err)
-		assert.ErrorEqual(t, "unknown type: unknown", err)
+		assert.ErrorIs(t, convert.ErrUnsType, err)
+		assert.ErrorEqual(t, "unsupported type: unknown", err)
 	})
 
 	t.Run("error - invalid format", func(t *testing.T) {
@@ -481,7 +481,7 @@ func Test_FromMap(t *testing.T) {
 		assert.Nil(t, have)
 	})
 
-	t.Run("error - unknown value key type", func(t *testing.T) {
+	t.Run("error - unsupported value key type", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{"type": "uint", "value": Value{}}
 
@@ -489,8 +489,8 @@ func Test_FromMap(t *testing.T) {
 		have, err := FromMap(m)
 
 		// --- Then ---
-		assert.ErrorIs(t, convert.ErrUnkType, err)
-		assert.ErrorEqual(t, "FromMap: unknown type: jsontype.Value", err)
+		assert.ErrorIs(t, convert.ErrUnsType, err)
+		assert.ErrorEqual(t, "FromMap: unsupported type: jsontype.Value", err)
 		assert.Nil(t, have)
 	})
 
@@ -530,6 +530,16 @@ func Test_FromMap(t *testing.T) {
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvValue, err)
 		assert.ErrorEqual(t, "FromMap: types do not match: invalid value", err)
+		assert.Nil(t, have)
+	})
+
+	t.Run("error - nil map", func(t *testing.T) {
+		// --- When ---
+		have, err := FromMap(nil)
+
+		// --- Then ---
+		assert.ErrorIs(t, convert.ErrInvFormat, err)
+		assert.ErrorEqual(t, "FromMap: missing value field: invalid format", err)
 		assert.Nil(t, have)
 	})
 }

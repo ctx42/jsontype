@@ -104,7 +104,7 @@ func newValue(reg *Registry, value any) (*Value, error) {
 	}
 	typ := reflect.TypeOf(value).String()
 	if cnv := reg.Converter(typ); cnv == nil {
-		return nil, fmt.Errorf("%w: %s", convert.ErrUnkType, typ)
+		return nil, fmt.Errorf("%w: %s", convert.ErrUnsType, typ)
 	}
 	return &Value{typ: typ, val: value}, nil
 }
@@ -140,7 +140,7 @@ func (val *Value) unmarshalJSON(reg *Registry, bytes []byte) error {
 	var err error
 	cnv := reg.Converter(tmp.Type)
 	if cnv == nil {
-		return fmt.Errorf("%w: %s", convert.ErrUnkType, tmp.Type)
+		return fmt.Errorf("%w: %s", convert.ErrUnsType, tmp.Type)
 	}
 	val.typ = tmp.Type
 	if val.val, err = cnv(tmp.Value); err != nil {

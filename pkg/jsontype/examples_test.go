@@ -3,6 +3,7 @@ package jsontype_test
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/ctx42/convert/pkg/convert"
@@ -77,4 +78,19 @@ func ExampleRegister_custom() {
 	fmt.Printf("unmarshalled: %[1]v (%[1]T)\n", gType.GoValue())
 	// Output:
 	// unmarshalled: 42s (time.Duration)
+}
+
+func ExampleFromMap() {
+	m := map[string]any{
+		"type":  "uint",
+		"value": uint(42),
+	}
+
+	val, err := jsontype.FromMap(m)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("%v (%T)\n", val.GoValue(), val.GoValue())
+	// Output: 42 (uint)
 }

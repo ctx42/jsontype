@@ -3,6 +3,7 @@
 ![Tests](https://github.com/ctx42/jsontype/actions/workflows/go.yml/badge.svg?branch=master)
 
 <!-- TOC -->
+  * [Why Use `jsontype`?](#why-use-jsontype)
   * [Installation](#installation)
   * [Example](#example)
   * [Type Registry](#type-registry)
@@ -12,9 +13,16 @@
 `jsontype` is a small Go module that preserves Go types when marshaling values 
 to JSON. It embeds type information directly into the JSON alongside the value.
 
-This is useful in scenarios where you marshal and unmarshal JSON to composite
-types, such as `map[string]any`. It ensures that Go types are preserved during
-a round-trip.
+## Why Use `jsontype`?
+
+Standard Go JSON marshaling loses specific type information for `interface{}` 
+(or `any`) fields. For example, a `uint64` becomes a `float64` after a
+round-trip through JSON if unmarshaled into a `map[string]any`. `jsontype`
+solves this by explicitly storing the type name.
+
+This is especially useful for:
+- Storing data in databases as JSON.
+- Passing typed messages over a bus where the receiver uses `map[string]any`.
 
 ## Installation
 
