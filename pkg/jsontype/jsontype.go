@@ -182,11 +182,16 @@ func FromMap(m map[string]any) (val *Value, err error) {
 	return val, nil
 }
 
-// FromMapAny expects the argument to be `map[string]any` in the format
-// returned by [Value.Map] and constructs an instance of [Value] from it.
-func FromMapAny(v any) (*Value, error) {
+// AsValue converts a map in the format returned by [Value.Map] into a [Value].
+// If v is already a *Value, it returns that value directly. Returns error if
+// conversion is not possible.
+func AsValue(v any) (*Value, error) {
+	if val, ok := v.(*Value); ok {
+		// TODO(rz): test this.
+		return val, nil
+	}
 	if val, ok := v.(map[string]any); ok {
 		return FromMap(val)
 	}
-	return nil, fmt.Errorf("FromMapAny: %w", convert.ErrInvType)
+	return nil, fmt.Errorf("AsValue: %w", convert.ErrInvType)
 }

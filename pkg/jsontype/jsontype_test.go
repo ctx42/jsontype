@@ -4,7 +4,6 @@
 package jsontype
 
 import (
-	"net/http"
 	"testing"
 	"time"
 
@@ -12,6 +11,8 @@ import (
 	"github.com/ctx42/testing/pkg/assert"
 	"github.com/ctx42/testing/pkg/dump"
 	"github.com/ctx42/testing/pkg/must"
+
+	"github.com/ctx42/jsontype/internal/test"
 )
 
 func Test_init(t *testing.T) {
@@ -233,13 +234,13 @@ func Test_New(t *testing.T) {
 
 	t.Run("type from a standard library", func(t *testing.T) {
 		// --- Given ---
-		v := http.Cookie{}
+		v := test.Type{}
 
 		// --- When ---
 		have := New(v)
 
 		// --- Then ---
-		assert.Equal(t, "http.Cookie", have.typ)
+		assert.Equal(t, "test.Type", have.typ)
 		assert.Equal(t, v, have.val)
 	})
 
@@ -544,13 +545,13 @@ func Test_FromMap(t *testing.T) {
 	})
 }
 
-func Test_FromMapAny(t *testing.T) {
+func Test_AsValue(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{"type": "uint", "value": uint(42)}
 
 		// --- When ---
-		have, err := FromMapAny(m)
+		have, err := AsValue(m)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -560,11 +561,11 @@ func Test_FromMapAny(t *testing.T) {
 
 	t.Run("error - not a map", func(t *testing.T) {
 		// --- When ---
-		have, err := FromMapAny(nil)
+		have, err := AsValue(nil)
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvType, err)
-		assert.ErrorEqual(t, "FromMapAny: invalid type", err)
+		assert.ErrorEqual(t, "AsValue: invalid type", err)
 		assert.Nil(t, have)
 	})
 }
