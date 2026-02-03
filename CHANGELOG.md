@@ -1,3 +1,6 @@
+## v0.5.1 (Tue, 03 Feb 2026 09:12:45 UTC)
+- chore: Update dependencies.
+
 ## v0.5.0 (Thu, 29 Jan 2026 11:24:15 UTC)
 - chore: Update dependencies, improve error messages, add examples, and enhance documentation.
 
