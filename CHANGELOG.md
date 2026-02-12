@@ -1,3 +1,7 @@
+## v0.6.0 (Thu, 12 Feb 2026 14:00:16 UTC)
+- feat: Add DefaultRegistry function returning default registry configuration.
+- feat: Add UnmarshalJSON function which allows you to provide custom Registry.
+
 ## v0.5.1 (Tue, 03 Feb 2026 09:12:45 UTC)
 - chore: Update dependencies.
 
