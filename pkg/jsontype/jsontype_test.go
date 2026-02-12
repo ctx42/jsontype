@@ -63,6 +63,37 @@ func Test_Register(t *testing.T) {
 	})
 }
 
+func Test_DefaultRegistry(t *testing.T) {
+	// --- When ---
+	have := DefaultRegistry()
+
+	// --- Then ---
+	assert.Len(t, 19, have.reg)
+
+	assert.NotNil(t, have.Converter(Int))
+	assert.NotNil(t, have.Converter(Int16))
+	assert.NotNil(t, have.Converter(Int32))
+	assert.NotNil(t, have.Converter(Int64))
+	assert.NotNil(t, have.Converter(Int8))
+
+	assert.NotNil(t, have.Converter(Uint))
+	assert.NotNil(t, have.Converter(Uint16))
+	assert.NotNil(t, have.Converter(Uint32))
+	assert.NotNil(t, have.Converter(Uint64))
+	assert.NotNil(t, have.Converter(Uint8))
+
+	assert.NotNil(t, have.Converter(Float32))
+	assert.NotNil(t, have.Converter(Float64))
+
+	assert.NotNil(t, have.Converter(Byte))
+	assert.NotNil(t, have.Converter(Rune))
+	assert.NotNil(t, have.Converter(String))
+	assert.NotNil(t, have.Converter(Bool))
+	assert.NotNil(t, have.Converter(Time))
+	assert.NotNil(t, have.Converter(Duration))
+	assert.NotNil(t, have.Converter(Nil))
+}
+
 func Test_New(t *testing.T) {
 	t.Run("int", func(t *testing.T) {
 		// --- When ---
@@ -546,7 +577,20 @@ func Test_FromMap(t *testing.T) {
 }
 
 func Test_AsValue(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
+	t.Run("instance of Value", func(t *testing.T) {
+		// --- Given ---
+		val := New(uint32(42))
+
+		// --- When ---
+		have, err := AsValue(val)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Uint32, have.typ)
+		assert.Equal(t, uint32(42), have.val)
+	})
+
+	t.Run("map", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{"type": "uint", "value": uint(42)}
 

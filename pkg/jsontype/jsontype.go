@@ -24,36 +24,7 @@ func Register(typ string, cnv convert.AnyToAny) convert.AnyToAny {
 	return registry.Register(typ, cnv)
 }
 
-func init() {
-	registry = NewRegistry()
-
-	registry.Register(Byte, convert.ToAnyAny(convert.Float64ToByte))
-	registry.Register(Uint8, convert.ToAnyAny(convert.Float64ToUint8))
-	registry.Register(Uint16, convert.ToAnyAny(convert.Float64ToUint16))
-	registry.Register(Uint32, convert.ToAnyAny(convert.Float64ToUint32))
-	registry.Register(Uint64, convert.ToAnyAny(convert.Float64ToUint64))
-	registry.Register(Uint, convert.ToAnyAny(convert.Float64ToUint))
-
-	registry.Register(Int8, convert.ToAnyAny(convert.Float64ToInt8))
-	registry.Register(Int16, convert.ToAnyAny(convert.Float64ToInt16))
-	registry.Register(Rune, convert.ToAnyAny(convert.Float64ToRune))
-	registry.Register(Int32, convert.ToAnyAny(convert.Float64ToInt32))
-	registry.Register(Int64, convert.ToAnyAny(convert.Float64ToInt64))
-	registry.Register(Int, convert.ToAnyAny(convert.Float64ToInt))
-
-	registry.Register(Float32, convert.ToAnyAny(convert.Float64ToFloat32))
-	registry.Register(Float64, convert.ToAnyAny(convert.Float64ToFloat64))
-
-	cnv := convert.StringToTime(time.RFC3339Nano)
-	registry.Register(Time, convert.ToAnyAny(cnv))
-	registry.Register(Duration, convert.ToAnyAny(convert.StringToDuration))
-
-	registry.Register(String, convert.ToAnyAny(convert.StringToString))
-	registry.Register(Bool, convert.ToAnyAny(convert.BoolToBool))
-	registry.Register(Duration, convert.ToAnyAny(convert.StringToDuration))
-
-	registry.Register(Nil, NilConverter)
-}
+func init() { registry = DefaultRegistry() }
 
 // List of type names supported by the package out of the box.
 const (
@@ -80,6 +51,39 @@ const (
 	Duration = "time.Duration"
 	Nil      = "nil"
 )
+
+// DefaultRegistry returns default registry configuration.
+func DefaultRegistry() *Registry {
+	reg := NewRegistry()
+
+	reg.Register(Byte, convert.ToAnyAny(convert.Float64ToByte))
+	reg.Register(Uint8, convert.ToAnyAny(convert.Float64ToUint8))
+	reg.Register(Uint16, convert.ToAnyAny(convert.Float64ToUint16))
+	reg.Register(Uint32, convert.ToAnyAny(convert.Float64ToUint32))
+	reg.Register(Uint64, convert.ToAnyAny(convert.Float64ToUint64))
+	reg.Register(Uint, convert.ToAnyAny(convert.Float64ToUint))
+
+	reg.Register(Int8, convert.ToAnyAny(convert.Float64ToInt8))
+	reg.Register(Int16, convert.ToAnyAny(convert.Float64ToInt16))
+	reg.Register(Rune, convert.ToAnyAny(convert.Float64ToRune))
+	reg.Register(Int32, convert.ToAnyAny(convert.Float64ToInt32))
+	reg.Register(Int64, convert.ToAnyAny(convert.Float64ToInt64))
+	reg.Register(Int, convert.ToAnyAny(convert.Float64ToInt))
+
+	reg.Register(Float32, convert.ToAnyAny(convert.Float64ToFloat32))
+	reg.Register(Float64, convert.ToAnyAny(convert.Float64ToFloat64))
+
+	cnv := convert.StringToTime(time.RFC3339Nano)
+	reg.Register(Time, convert.ToAnyAny(cnv))
+	reg.Register(Duration, convert.ToAnyAny(convert.StringToDuration))
+
+	reg.Register(String, convert.ToAnyAny(convert.StringToString))
+	reg.Register(Bool, convert.ToAnyAny(convert.BoolToBool))
+	reg.Register(Duration, convert.ToAnyAny(convert.StringToDuration))
+
+	reg.Register(Nil, NilConverter)
+	return reg
+}
 
 // Value represents a value and its type.
 type Value struct {
@@ -187,7 +191,6 @@ func FromMap(m map[string]any) (val *Value, err error) {
 // conversion is not possible.
 func AsValue(v any) (*Value, error) {
 	if val, ok := v.(*Value); ok {
-		// TODO(rz): test this.
 		return val, nil
 	}
 	if val, ok := v.(map[string]any); ok {
