@@ -3,6 +3,35 @@
 
 package jsontype
 
+import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/ctx42/convert/pkg/convert"
+)
+
+// UnmarshalJSON unmarshals JSON representation of the value using [Registry].
+func UnmarshalJSON(reg *Registry, bytes []byte, val *Value) error {
+	tmp := struct {
+		Type  string `json:"type"`
+		Value any    `json:"value"`
+	}{}
+	if err := json.Unmarshal(bytes, &tmp); err != nil {
+		return err
+	}
+
+	var err error
+	cnv := reg.Converter(tmp.Type)
+	if cnv == nil {
+		return fmt.Errorf("%w: %s", convert.ErrUnsType, tmp.Type)
+	}
+	val.typ = tmp.Type
+	if val.val, err = cnv(tmp.Value); err != nil {
+		return fmt.Errorf("jsontype: %w", err)
+	}
+	return nil
+}
+
 // keyValue reruns the value represented by the key from the given map. Returns
 // the value and true if it exists. Returns nil and false if it doesn't or when
 // the map is empty or nil.

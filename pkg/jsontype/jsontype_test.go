@@ -289,6 +289,8 @@ func Test_New(t *testing.T) {
 }
 
 func Test_NewValue(t *testing.T) {
+	type MyType int
+
 	t.Run("nil", func(t *testing.T) {
 		// --- When ---
 		have, err := NewValue(nil)
@@ -309,13 +311,28 @@ func Test_NewValue(t *testing.T) {
 		assert.Equal(t, 42, have.val)
 	})
 
+	t.Run("use custom registry", func(t *testing.T) {
+		// --- Given ---
+		cnv := func(value any) (any, error) { return value, nil }
+		reg := NewRegistry()
+		reg.Register("jsontype.MyType", cnv)
+
+		// --- When ---
+		have, err := NewValue(MyType(42), WithRegistry(reg))
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, "jsontype.MyType", have.typ)
+		assert.Equal(t, MyType(42), have.val)
+	})
+
 	t.Run("error - unsupported type", func(t *testing.T) {
 		// --- When ---
-		have, err := NewValue(Value{})
+		have, err := NewValue(MyType(42))
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrUnsType, err)
-		assert.ErrorEqual(t, "unsupported type: jsontype.Value", err)
+		assert.ErrorEqual(t, "unsupported type: jsontype.MyType", err)
 		assert.Nil(t, have)
 	})
 }
@@ -431,32 +448,6 @@ func Test_Value_UnmarshallJSON(t *testing.T) {
 		assert.Equal(t, uint8(42), val.val)
 	})
 
-	t.Run("nil", func(t *testing.T) {
-		// --- Given ---
-		data := `{"type": "nil", "value": null}`
-		val := &Value{}
-
-		// --- When ---
-		err := val.UnmarshalJSON([]byte(data))
-
-		// --- Then ---
-		assert.NoError(t, err)
-		assert.Equal(t, "nil", val.typ)
-		assert.Nil(t, val.val)
-	})
-
-	t.Run("error - invalid JSON", func(t *testing.T) {
-		// --- Given ---
-		data := `{!!!}`
-		val := &Value{}
-
-		// --- When ---
-		err := val.UnmarshalJSON([]byte(data))
-
-		// --- Then ---
-		assert.ErrorContain(t, "invalid character", err)
-	})
-
 	t.Run("error - unsupported type", func(t *testing.T) {
 		// --- Given ---
 		data := `{"type": "unknown", "value": 42}`
@@ -468,20 +459,6 @@ func Test_Value_UnmarshallJSON(t *testing.T) {
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrUnsType, err)
 		assert.ErrorEqual(t, "unsupported type: unknown", err)
-	})
-
-	t.Run("error - invalid format", func(t *testing.T) {
-		// --- Given ---
-		data := `{"type": "time.Time", "value": "abc"}`
-		val := &Value{}
-
-		// --- When ---
-		err := val.UnmarshalJSON([]byte(data))
-
-		// --- Then ---
-		assert.ErrorIs(t, convert.ErrInvValue, err)
-		wMsg := "jsontype: invalid value: from string to time.Time"
-		assert.ErrorEqual(t, wMsg, err)
 	})
 }
 

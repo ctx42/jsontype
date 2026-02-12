@@ -100,17 +100,19 @@ func New[T any](value T) *Value {
 // NewValue works like [New], but it supports untyped nil as the value and
 // checks if the type has a registered converter. Returns error when the type
 // has no registered converter.
-func NewValue(val any) (*Value, error) { return newValue(registry, val) }
-
-func newValue(reg *Registry, value any) (*Value, error) {
-	if value == nil {
+func NewValue(val any, opts ...Option) (*Value, error) {
+	if val == nil {
 		return &Value{typ: Nil, val: nil}, nil
 	}
-	typ := reflect.TypeOf(value).String()
-	if cnv := reg.Converter(typ); cnv == nil {
+	def := &Options{reg: registry}
+	for _, opt := range opts {
+		opt(def)
+	}
+	typ := reflect.TypeOf(val).String()
+	if cnv := def.reg.Converter(typ); cnv == nil {
 		return nil, fmt.Errorf("%w: %s", convert.ErrUnsType, typ)
 	}
-	return &Value{typ: typ, val: value}, nil
+	return &Value{typ: typ, val: val}, nil
 }
 
 func (val *Value) GoTypeName() string { return val.typ }
@@ -129,28 +131,7 @@ func (val *Value) MarshalJSON() ([]byte, error) {
 }
 
 func (val *Value) UnmarshalJSON(bytes []byte) error {
-	return val.unmarshalJSON(registry, bytes)
-}
-
-func (val *Value) unmarshalJSON(reg *Registry, bytes []byte) error {
-	tmp := struct {
-		Type  string `json:"type"`
-		Value any    `json:"value"`
-	}{}
-	if err := json.Unmarshal(bytes, &tmp); err != nil {
-		return err
-	}
-
-	var err error
-	cnv := reg.Converter(tmp.Type)
-	if cnv == nil {
-		return fmt.Errorf("%w: %s", convert.ErrUnsType, tmp.Type)
-	}
-	val.typ = tmp.Type
-	if val.val, err = cnv(tmp.Value); err != nil {
-		return fmt.Errorf("jsontype: %w", err)
-	}
-	return nil
+	return UnmarshalJSON(registry, bytes, val)
 }
 
 // FromMap constructs an instance of [Value] from its map representation. It
