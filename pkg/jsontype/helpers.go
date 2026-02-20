@@ -10,14 +10,14 @@ import (
 	"github.com/ctx42/convert/pkg/convert"
 )
 
-// UnmarshalJSON unmarshals JSON representation of the value using [Registry].
-func UnmarshalJSON(reg *Registry, bytes []byte, val *Value) error {
+// Unmarshal unmarshals JSON representation of the value using [Registry].
+func Unmarshal(reg *Registry, bytes []byte, val *Value) error {
 	tmp := struct {
 		Type  string `json:"type"`
 		Value any    `json:"value"`
 	}{}
 	if err := json.Unmarshal(bytes, &tmp); err != nil {
-		return err
+		return fmt.Errorf("jsontype: %w", err)
 	}
 
 	var err error

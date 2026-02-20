@@ -11,7 +11,7 @@ import (
 	"github.com/ctx42/testing/pkg/assert"
 )
 
-func Test_UnmarshallJSON(t *testing.T) {
+func Test_Unmarshall(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
@@ -20,7 +20,7 @@ func Test_UnmarshallJSON(t *testing.T) {
 		val := &Value{}
 
 		// --- When ---
-		err := UnmarshalJSON(reg, []byte(data), val)
+		err := Unmarshal(reg, []byte(data), val)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -36,7 +36,7 @@ func Test_UnmarshallJSON(t *testing.T) {
 		val := &Value{}
 
 		// --- When ---
-		err := UnmarshalJSON(reg, []byte(data), val)
+		err := Unmarshal(reg, []byte(data), val)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -51,7 +51,7 @@ func Test_UnmarshallJSON(t *testing.T) {
 		val := &Value{}
 
 		// --- When ---
-		err := UnmarshalJSON(reg, []byte(data), val)
+		err := Unmarshal(reg, []byte(data), val)
 
 		// --- Then ---
 		assert.ErrorContain(t, "invalid character", err)
@@ -64,7 +64,7 @@ func Test_UnmarshallJSON(t *testing.T) {
 		val := &Value{}
 
 		// --- When ---
-		err := UnmarshalJSON(reg, []byte(data), val)
+		err := Unmarshal(reg, []byte(data), val)
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrUnsType, err)
@@ -80,7 +80,7 @@ func Test_UnmarshallJSON(t *testing.T) {
 		val := &Value{}
 
 		// --- When ---
-		err := UnmarshalJSON(reg, []byte(data), val)
+		err := Unmarshal(reg, []byte(data), val)
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvValue, err)

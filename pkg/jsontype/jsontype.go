@@ -131,7 +131,7 @@ func (val *Value) MarshalJSON() ([]byte, error) {
 }
 
 func (val *Value) UnmarshalJSON(bytes []byte) error {
-	return UnmarshalJSON(registry, bytes, val)
+	return Unmarshal(registry, bytes, val)
 }
 
 // FromMap constructs an instance of [Value] from its map representation. It
