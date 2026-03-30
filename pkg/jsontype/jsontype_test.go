@@ -433,7 +433,7 @@ func Test_Value_MarshalJSON(t *testing.T) {
 	})
 }
 
-func Test_Value_UnmarshallJSON(t *testing.T) {
+func Test_Value_UnmarshalJSON(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
 		data := `{"type": "uint8", "value": 42}`
@@ -591,7 +591,7 @@ func Test_AsValue(t *testing.T) {
 	})
 }
 
-func Test_Value_UnmarshallJSON_success_tabular(t *testing.T) {
+func Test_Value_UnmarshalJSON_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 

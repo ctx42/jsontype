@@ -79,7 +79,6 @@ func DefaultRegistry() *Registry {
 
 	reg.Register(String, convert.ToAnyAny(convert.StringToString))
 	reg.Register(Bool, convert.ToAnyAny(convert.BoolToBool))
-	reg.Register(Duration, convert.ToAnyAny(convert.StringToDuration))
 
 	reg.Register(Nil, NilConverter)
 	return reg
@@ -115,8 +114,11 @@ func NewValue(val any, opts ...Option) (*Value, error) {
 	return &Value{typ: typ, val: val}, nil
 }
 
+// GoTypeName returns the Go type name of the value.
 func (val *Value) GoTypeName() string { return val.typ }
-func (val *Value) GoValue() any       { return val.val }
+
+// GoValue returns the underlying Go value.
+func (val *Value) GoValue() any { return val.val }
 
 // Map returns map representation of the [Value].
 func (val *Value) Map() map[string]any {
@@ -130,6 +132,8 @@ func (val *Value) MarshalJSON() ([]byte, error) {
 	return json.Marshal(val.Map())
 }
 
+// UnmarshalJSON uses the package-level registry. To unmarshal with a custom
+// registry, call [Unmarshal] directly.
 func (val *Value) UnmarshalJSON(bytes []byte) error {
 	return Unmarshal(registry, bytes, val)
 }

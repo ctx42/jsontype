@@ -11,7 +11,7 @@ import (
 	"github.com/ctx42/testing/pkg/assert"
 )
 
-func Test_Unmarshall(t *testing.T) {
+func Test_Unmarshal(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()

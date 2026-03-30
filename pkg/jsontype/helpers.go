@@ -32,7 +32,7 @@ func Unmarshal(reg *Registry, bytes []byte, val *Value) error {
 	return nil
 }
 
-// keyValue reruns the value represented by the key from the given map. Returns
+// keyValue returns the value represented by the key from the given map. Returns
 // the value and true if it exists. Returns nil and false if it doesn't or when
 // the map is empty or nil.
 func keyValue(key string, m map[string]any) (any, bool) {
