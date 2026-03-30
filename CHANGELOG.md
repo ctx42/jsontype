@@ -1,3 +1,9 @@
+## v0.6.1 (Mon, 30 Mar 2026 08:48:11 UTC)
+- feat!: Rename `jsontype.Unmarshal` to `Unmarshal` to reduce stutter.
+- fix(jsontype): correct duplicate registration and missing docs.
+- chore(jsontype): Strip email addresses from SPDX copyright headers across all files.
+- chore: exclude CLAUDE.md from version control.
+
 ## v0.6.0 (Thu, 12 Feb 2026 14:00:16 UTC)
 - feat: Add DefaultRegistry function returning default registry configuration.
 - feat: Add UnmarshalJSON function which allows you to provide custom Registry.
