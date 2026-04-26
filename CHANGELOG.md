@@ -1,3 +1,6 @@
+## v0.6.2 (Sun, 26 Apr 2026 13:39:38 UTC)
+- chore: update dependencies.
+
 ## v0.6.1 (Mon, 30 Mar 2026 08:48:11 UTC)
 - feat!: Rename `jsontype.Unmarshal` to `Unmarshal` to reduce stutter.
 - fix(jsontype): correct duplicate registration and missing docs.
