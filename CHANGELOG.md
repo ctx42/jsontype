@@ -1,3 +1,6 @@
+## v0.7.0 (Fri, 01 May 2026 20:09:25 UTC)
+- chore: Update to Go 1.26 and update dependencies.
+
 ## v0.6.2 (Sun, 26 Apr 2026 13:39:38 UTC)
 - chore: update dependencies.
 
