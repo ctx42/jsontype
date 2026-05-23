@@ -129,6 +129,31 @@ func (val *Value) MarshalJSON() ([]byte, error) {
 	if val == nil || val.typ == "" {
 		return nil, convert.ErrInvValue
 	}
+	switch val.typ {
+	case String:
+		s, ok := val.val.(string)
+		if !ok {
+			return nil, fmt.Errorf("MarshalJSON: %s: %w", val.typ, convert.ErrInvValue)
+		}
+		return json.Marshal(s)
+	case Bool:
+		b, ok := val.val.(bool)
+		if !ok {
+			return nil, fmt.Errorf("MarshalJSON: %s: %w", val.typ, convert.ErrInvValue)
+		}
+		return json.Marshal(b)
+	case Nil:
+		if val.val != nil {
+			return nil, fmt.Errorf("MarshalJSON: %s: %w", val.typ, convert.ErrInvValue)
+		}
+		return []byte("null"), nil
+	case Float64:
+		f, ok := val.val.(float64)
+		if !ok {
+			return nil, fmt.Errorf("MarshalJSON: %s: %w", val.typ, convert.ErrInvValue)
+		}
+		return json.Marshal(f)
+	}
 	return json.Marshal(val.Map())
 }
 

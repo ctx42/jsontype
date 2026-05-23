@@ -384,6 +384,30 @@ func Test_Value_MarshalJSON(t *testing.T) {
 		assert.JSON(t, `{"type":"int","value":42}`, string(have))
 	})
 
+	t.Run("success string", func(t *testing.T) {
+		// --- Given ---
+		val := &Value{typ: String, val: "abc"}
+
+		// --- When ---
+		have, err := val.MarshalJSON()
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, `"abc"`, string(have))
+	})
+
+	t.Run("success bool", func(t *testing.T) {
+		// --- Given ---
+		val := &Value{typ: Bool, val: true}
+
+		// --- When ---
+		have, err := val.MarshalJSON()
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, "true", string(have))
+	})
+
 	t.Run("success nil", func(t *testing.T) {
 		// --- Given ---
 		val := must.Value(NewValue(nil))
@@ -393,7 +417,19 @@ func Test_Value_MarshalJSON(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
-		assert.JSON(t, `{"type":"nil","value":null}`, string(have))
+		assert.Equal(t, "null", string(have))
+	})
+
+	t.Run("success float64", func(t *testing.T) {
+		// --- Given ---
+		val := &Value{typ: Float64, val: 4.2}
+
+		// --- When ---
+		have, err := val.MarshalJSON()
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, "4.2", string(have))
 	})
 
 	t.Run("error - empty type", func(t *testing.T) {
@@ -420,6 +456,58 @@ func Test_Value_MarshalJSON(t *testing.T) {
 		assert.Nil(t, have)
 	})
 
+	t.Run("error - string type mismatch", func(t *testing.T) {
+		// --- Given ---
+		val := &Value{typ: String, val: 42}
+
+		// --- When ---
+		have, err := val.MarshalJSON()
+
+		// --- Then ---
+		assert.ErrorIs(t, convert.ErrInvValue, err)
+		assert.ErrorEqual(t, "MarshalJSON: string: invalid value", err)
+		assert.Nil(t, have)
+	})
+
+	t.Run("error - bool type mismatch", func(t *testing.T) {
+		// --- Given ---
+		val := &Value{typ: Bool, val: "x"}
+
+		// --- When ---
+		have, err := val.MarshalJSON()
+
+		// --- Then ---
+		assert.ErrorIs(t, convert.ErrInvValue, err)
+		assert.ErrorEqual(t, "MarshalJSON: bool: invalid value", err)
+		assert.Nil(t, have)
+	})
+
+	t.Run("error - nil type mismatch", func(t *testing.T) {
+		// --- Given ---
+		val := &Value{typ: Nil, val: 42}
+
+		// --- When ---
+		have, err := val.MarshalJSON()
+
+		// --- Then ---
+		assert.ErrorIs(t, convert.ErrInvValue, err)
+		assert.ErrorEqual(t, "MarshalJSON: nil: invalid value", err)
+		assert.Nil(t, have)
+	})
+
+	t.Run("error - float64 type mismatch", func(t *testing.T) {
+		// --- Given ---
+		val := &Value{typ: Float64, val: "x"}
+
+		// --- When ---
+		have, err := val.MarshalJSON()
+
+		// --- Then ---
+		assert.ErrorIs(t, convert.ErrInvValue, err)
+		assert.ErrorEqual(t, "MarshalJSON: float64: invalid value", err)
+		assert.Nil(t, have)
+	})
+
 	t.Run("error - unsupported type", func(t *testing.T) {
 		// --- Given ---
 		val := &Value{typ: "func()", val: func() {}}
@@ -434,7 +522,7 @@ func Test_Value_MarshalJSON(t *testing.T) {
 }
 
 func Test_Value_UnmarshalJSON(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
+	t.Run("success envelope", func(t *testing.T) {
 		// --- Given ---
 		data := `{"type": "uint8", "value": 42}`
 		val := &Value{}
@@ -446,6 +534,58 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, Uint8, val.typ)
 		assert.Equal(t, uint8(42), val.val)
+	})
+
+	t.Run("success bare string", func(t *testing.T) {
+		// --- Given ---
+		val := &Value{}
+
+		// --- When ---
+		err := val.UnmarshalJSON([]byte(`"abc"`))
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, String, val.typ)
+		assert.Equal(t, "abc", val.val)
+	})
+
+	t.Run("success bare bool", func(t *testing.T) {
+		// --- Given ---
+		val := &Value{}
+
+		// --- When ---
+		err := val.UnmarshalJSON([]byte(`true`))
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Bool, val.typ)
+		assert.Equal(t, true, val.val)
+	})
+
+	t.Run("success bare null", func(t *testing.T) {
+		// --- Given ---
+		val := &Value{}
+
+		// --- When ---
+		err := val.UnmarshalJSON([]byte(`null`))
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Nil, val.typ)
+		assert.Nil(t, val.val)
+	})
+
+	t.Run("success bare float64", func(t *testing.T) {
+		// --- Given ---
+		val := &Value{}
+
+		// --- When ---
+		err := val.UnmarshalJSON([]byte(`4.2`))
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Float64, val.typ)
+		assert.Equal(t, 4.2, val.val)
 	})
 
 	t.Run("error - unsupported type", func(t *testing.T) {
@@ -712,6 +852,30 @@ func Test_Value_UnmarshalJSON_success_tabular(t *testing.T) {
 			"nil",
 			`{"type": "nil", "value": null}`,
 			nil,
+		},
+		{
+			"bare string",
+			"string",
+			`"abc"`,
+			"abc",
+		},
+		{
+			"bare bool",
+			"bool",
+			`true`,
+			true,
+		},
+		{
+			"bare null",
+			"nil",
+			`null`,
+			nil,
+		},
+		{
+			"bare float64",
+			"float64",
+			`4.2`,
+			4.2,
 		},
 	}
 
