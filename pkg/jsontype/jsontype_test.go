@@ -669,7 +669,7 @@ func Test_FromMap(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrUnsType, err)
-		wMsg := "jsontype: jsontype: unsupported type: jsontype.Value"
+		wMsg := "jsontype: unsupported type: jsontype.Value"
 		assert.ErrorEqual(t, wMsg, err)
 		assert.Nil(t, have)
 	})

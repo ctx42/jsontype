@@ -186,7 +186,7 @@ func FromMap(m map[string]any) (val *Value, err error) {
 		return nil, fmt.Errorf(format, convert.ErrInvFormat)
 	}
 	if val, err = NewValue(v); err != nil {
-		return nil, fmt.Errorf("jsontype: %w", err)
+		return nil, err
 	}
 
 	if v, ok = keyValue("type", m); !ok {
