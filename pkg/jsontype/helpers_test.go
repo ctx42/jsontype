@@ -134,6 +134,19 @@ func Test_Unmarshal(t *testing.T) {
 		assert.Equal(t, -1.5, val.val)
 	})
 
+	t.Run("error - invalid bare string", func(t *testing.T) {
+		// --- Given ---
+		reg := NewRegistry()
+		data := []byte(`"abc`)
+		val := &Value{}
+
+		// --- When ---
+		err := Unmarshal(reg, data, val)
+
+		// --- Then ---
+		assert.ErrorEqual(t, "jsontype: unexpected end of JSON input", err)
+	})
+
 	t.Run("error - malformed bool true token", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
@@ -173,6 +186,20 @@ func Test_Unmarshal(t *testing.T) {
 		assert.ErrorEqual(t, "jsontype: invalid JSON token", err)
 	})
 
+	t.Run("error - invalid number", func(t *testing.T) {
+		// --- Given ---
+		reg := NewRegistry()
+		data := []byte(`1abc`)
+		val := &Value{}
+
+		// --- When ---
+		err := Unmarshal(reg, data, val)
+
+		// --- Then ---
+		assert.ErrorContain(t, `jsontype: `, err)
+		assert.ErrorContain(t, `: invalid syntax`, err)
+	})
+
 	t.Run("error - invalid JSON", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
@@ -183,7 +210,7 @@ func Test_Unmarshal(t *testing.T) {
 		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
-		assert.ErrorContain(t, "invalid character", err)
+		assert.ErrorContain(t, "jsontype: invalid character", err)
 	})
 
 	t.Run("error - unsupported type", func(t *testing.T) {
@@ -245,7 +272,7 @@ func Test_unmarshalEnvelope(t *testing.T) {
 		err := unmarshalEnvelope(reg, data, val)
 
 		// --- Then ---
-		assert.ErrorContain(t, "invalid character", err)
+		assert.ErrorContain(t, "jsontype: invalid character '!'", err)
 	})
 
 	t.Run("error - unsupported type", func(t *testing.T) {
