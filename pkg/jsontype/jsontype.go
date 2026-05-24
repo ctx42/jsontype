@@ -109,7 +109,7 @@ func NewValue(val any, opts ...Option) (*Value, error) {
 	}
 	typ := reflect.TypeOf(val).String()
 	if cnv := def.reg.Converter(typ); cnv == nil {
-		return nil, fmt.Errorf("%w: %s", convert.ErrUnsType, typ)
+		return nil, fmt.Errorf("jsontype: %w: %s", convert.ErrUnsType, typ)
 	}
 	return &Value{typ: typ, val: val}, nil
 }
@@ -136,13 +136,15 @@ func (val *Value) MarshalJSON() ([]byte, error) {
 	case String:
 		s, ok := val.val.(string)
 		if !ok {
-			return nil, fmt.Errorf("MarshalJSON: %s: %w", val.typ, convert.ErrInvValue)
+			format := "jsontype: %s: %w"
+			return nil, fmt.Errorf(format, val.typ, convert.ErrInvValue)
 		}
 		return json.Marshal(s)
 	case Bool:
 		b, ok := val.val.(bool)
 		if !ok {
-			return nil, fmt.Errorf("MarshalJSON: %s: %w", val.typ, convert.ErrInvValue)
+			format := "jsontype: %s: %w"
+			return nil, fmt.Errorf(format, val.typ, convert.ErrInvValue)
 		}
 		if b {
 			return []byte("true"), nil
@@ -150,13 +152,15 @@ func (val *Value) MarshalJSON() ([]byte, error) {
 		return []byte("false"), nil
 	case Nil:
 		if val.val != nil {
-			return nil, fmt.Errorf("MarshalJSON: %s: %w", val.typ, convert.ErrInvValue)
+			format := "jsontype: %s: %w"
+			return nil, fmt.Errorf(format, val.typ, convert.ErrInvValue)
 		}
 		return []byte("null"), nil
 	case Float64:
 		f, ok := val.val.(float64)
 		if !ok {
-			return nil, fmt.Errorf("MarshalJSON: %s: %w", val.typ, convert.ErrInvValue)
+			format := "jsontype: %s: %w"
+			return nil, fmt.Errorf(format, val.typ, convert.ErrInvValue)
 		}
 		return json.Marshal(f)
 	}
@@ -177,26 +181,26 @@ func FromMap(m map[string]any) (val *Value, err error) {
 	var ok bool
 
 	if v, ok = keyValue("value", m); !ok {
-		format := "FromMap: missing value field: %w"
+		format := "jsontype: missing value field: %w"
 		return nil, fmt.Errorf(format, convert.ErrInvFormat)
 	}
 	if val, err = NewValue(v); err != nil {
-		return nil, fmt.Errorf("FromMap: %w", err)
+		return nil, fmt.Errorf("jsontype: %w", err)
 	}
 
 	if v, ok = keyValue("type", m); !ok {
-		format := "FromMap: missing type field: %w"
+		format := "jsontype: missing type field: %w"
 		return nil, fmt.Errorf(format, convert.ErrInvFormat)
 	}
 
 	var typ string
 	if typ, ok = v.(string); !ok {
-		format := "FromMap: type field: %w"
+		format := "jsontype: type field: %w"
 		return nil, fmt.Errorf(format, convert.ErrInvFormat)
 	}
 
 	if typ != val.typ {
-		format := "FromMap: types do not match: %w"
+		format := "jsontype: types do not match: %w"
 		return nil, fmt.Errorf(format, convert.ErrInvValue)
 	}
 	return val, nil
@@ -212,5 +216,5 @@ func AsValue(v any) (*Value, error) {
 	if val, ok := v.(map[string]any); ok {
 		return FromMap(val)
 	}
-	return nil, fmt.Errorf("AsValue: %w", convert.ErrInvType)
+	return nil, fmt.Errorf("jsontype: %w", convert.ErrInvType)
 }

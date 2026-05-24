@@ -332,7 +332,7 @@ func Test_NewValue(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrUnsType, err)
-		assert.ErrorEqual(t, "unsupported type: jsontype.MyType", err)
+		assert.ErrorEqual(t, "jsontype: unsupported type: jsontype.MyType", err)
 		assert.Nil(t, have)
 	})
 }
@@ -477,7 +477,7 @@ func Test_Value_MarshalJSON(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvValue, err)
-		assert.ErrorEqual(t, "MarshalJSON: string: invalid value", err)
+		assert.ErrorEqual(t, "jsontype: string: invalid value", err)
 		assert.Nil(t, have)
 	})
 
@@ -490,7 +490,7 @@ func Test_Value_MarshalJSON(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvValue, err)
-		assert.ErrorEqual(t, "MarshalJSON: bool: invalid value", err)
+		assert.ErrorEqual(t, "jsontype: bool: invalid value", err)
 		assert.Nil(t, have)
 	})
 
@@ -503,7 +503,7 @@ func Test_Value_MarshalJSON(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvValue, err)
-		assert.ErrorEqual(t, "MarshalJSON: nil: invalid value", err)
+		assert.ErrorEqual(t, "jsontype: nil: invalid value", err)
 		assert.Nil(t, have)
 	})
 
@@ -516,7 +516,7 @@ func Test_Value_MarshalJSON(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvValue, err)
-		assert.ErrorEqual(t, "MarshalJSON: float64: invalid value", err)
+		assert.ErrorEqual(t, "jsontype: float64: invalid value", err)
 		assert.Nil(t, have)
 	})
 
@@ -628,7 +628,7 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrUnsType, err)
-		assert.ErrorEqual(t, "unsupported type: unknown", err)
+		assert.ErrorEqual(t, "jsontype: unsupported type: unknown", err)
 	})
 }
 
@@ -655,7 +655,7 @@ func Test_FromMap(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvFormat, err)
-		wMsg := "FromMap: missing value field: invalid format"
+		wMsg := "jsontype: missing value field: invalid format"
 		assert.ErrorEqual(t, wMsg, err)
 		assert.Nil(t, have)
 	})
@@ -669,7 +669,7 @@ func Test_FromMap(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrUnsType, err)
-		assert.ErrorEqual(t, "FromMap: unsupported type: jsontype.Value", err)
+		assert.ErrorEqual(t, "jsontype: jsontype: unsupported type: jsontype.Value", err)
 		assert.Nil(t, have)
 	})
 
@@ -682,7 +682,7 @@ func Test_FromMap(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvFormat, err)
-		assert.ErrorEqual(t, "FromMap: missing type field: invalid format", err)
+		assert.ErrorEqual(t, "jsontype: missing type field: invalid format", err)
 		assert.Nil(t, have)
 	})
 
@@ -695,7 +695,7 @@ func Test_FromMap(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvFormat, err)
-		assert.ErrorEqual(t, "FromMap: type field: invalid format", err)
+		assert.ErrorEqual(t, "jsontype: type field: invalid format", err)
 		assert.Nil(t, have)
 	})
 
@@ -708,7 +708,7 @@ func Test_FromMap(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvValue, err)
-		assert.ErrorEqual(t, "FromMap: types do not match: invalid value", err)
+		assert.ErrorEqual(t, "jsontype: types do not match: invalid value", err)
 		assert.Nil(t, have)
 	})
 
@@ -718,7 +718,7 @@ func Test_FromMap(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvFormat, err)
-		assert.ErrorEqual(t, "FromMap: missing value field: invalid format", err)
+		assert.ErrorEqual(t, "jsontype: missing value field: invalid format", err)
 		assert.Nil(t, have)
 	})
 }
@@ -756,7 +756,7 @@ func Test_AsValue(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvType, err)
-		assert.ErrorEqual(t, "AsValue: invalid type", err)
+		assert.ErrorEqual(t, "jsontype: invalid type", err)
 		assert.Nil(t, have)
 	})
 }

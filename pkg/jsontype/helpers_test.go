@@ -197,7 +197,7 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrUnsType, err)
-		assert.ErrorEqual(t, "unsupported type: unknown", err)
+		assert.ErrorEqual(t, "jsontype: unsupported type: unknown", err)
 	})
 
 	t.Run("error - invalid format", func(t *testing.T) {
@@ -259,7 +259,7 @@ func Test_unmarshalEnvelope(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrUnsType, err)
-		assert.ErrorEqual(t, "unsupported type: unknown", err)
+		assert.ErrorEqual(t, "jsontype: unsupported type: unknown", err)
 	})
 }
 

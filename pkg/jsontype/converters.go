@@ -13,7 +13,7 @@ import (
 // it returns nil and nil error.
 func NilConverter(value any) (any, error) {
 	if value != nil {
-		format := "NilConverter: requires a nil value: %w"
+		format := "jsontype: requires a nil value: %w"
 		return nil, fmt.Errorf(format, convert.ErrInvType)
 	}
 	return nil, nil

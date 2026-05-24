@@ -71,7 +71,7 @@ func unmarshalEnvelope(reg *Registry, data []byte, val *Value) error {
 	}
 	cnv := reg.Converter(tmp.Type)
 	if cnv == nil {
-		return fmt.Errorf("%w: %s", convert.ErrUnsType, tmp.Type)
+		return fmt.Errorf("jsontype: %w: %s", convert.ErrUnsType, tmp.Type)
 	}
 	val.typ = tmp.Type
 	var err error
