@@ -16,11 +16,11 @@ func Test_Unmarshal(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
 		reg.Register(Uint8, convert.ToAnyAny(convert.Float64ToUint8))
-		data := `{"type": "uint8", "value": 42}`
+		data := []byte(`{"type": "uint8", "value": 42}`)
 		val := &Value{}
 
 		// --- When ---
-		err := Unmarshal(reg, []byte(data), val)
+		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -32,11 +32,11 @@ func Test_Unmarshal(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
 		reg.Register(Nil, NilConverter)
-		data := `{"type": "nil", "value": null}`
+		data := []byte(`{"type": "nil", "value": null}`)
 		val := &Value{}
 
 		// --- When ---
-		err := Unmarshal(reg, []byte(data), val)
+		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -47,10 +47,11 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success bare string", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+		data := []byte(`"abc"`)
 		val := &Value{}
 
 		// --- When ---
-		err := Unmarshal(reg, []byte(`"abc"`), val)
+		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -61,10 +62,11 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success bare bool true", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+		data := []byte(`true`)
 		val := &Value{}
 
 		// --- When ---
-		err := Unmarshal(reg, []byte(`true`), val)
+		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -75,10 +77,11 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success bare bool false", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+		data := []byte(`false`)
 		val := &Value{}
 
 		// --- When ---
-		err := Unmarshal(reg, []byte(`false`), val)
+		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -89,10 +92,11 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success bare null", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+		data := []byte(`null`)
 		val := &Value{}
 
 		// --- When ---
-		err := Unmarshal(reg, []byte(`null`), val)
+		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -103,10 +107,11 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success bare float64", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+		data := []byte(`4.2`)
 		val := &Value{}
 
 		// --- When ---
-		err := Unmarshal(reg, []byte(`4.2`), val)
+		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -117,10 +122,11 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success bare negative float64", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+		data := []byte(`-1.5`)
 		val := &Value{}
 
 		// --- When ---
-		err := Unmarshal(reg, []byte(`-1.5`), val)
+		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -131,47 +137,50 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("error - malformed bool true token", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+		data := []byte(`tXYZ`)
 		val := &Value{}
 
 		// --- When ---
-		err := Unmarshal(reg, []byte(`tXYZ`), val)
+		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
-		assert.ErrorContain(t, "invalid JSON token", err)
+		assert.ErrorEqual(t, "jsontype: invalid JSON token", err)
 	})
 
 	t.Run("error - malformed bool false token", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+		data := []byte(`fals`)
 		val := &Value{}
 
 		// --- When ---
-		err := Unmarshal(reg, []byte(`fals`), val)
+		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
-		assert.ErrorContain(t, "invalid JSON token", err)
+		assert.ErrorEqual(t, "jsontype: invalid JSON token", err)
 	})
 
 	t.Run("error - malformed null token", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+		data := []byte(`nope`)
 		val := &Value{}
 
 		// --- When ---
-		err := Unmarshal(reg, []byte(`nope`), val)
+		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
-		assert.ErrorContain(t, "invalid JSON token", err)
+		assert.ErrorEqual(t, "jsontype: invalid JSON token", err)
 	})
 
 	t.Run("error - invalid JSON", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
-		data := `{!!!}`
+		data := []byte(`{!!!}`)
 		val := &Value{}
 
 		// --- When ---
-		err := Unmarshal(reg, []byte(data), val)
+		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
 		assert.ErrorContain(t, "invalid character", err)
@@ -180,11 +189,11 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("error - unsupported type", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
-		data := `{"type": "unknown", "value": 42}`
+		data := []byte(`{"type": "unknown", "value": 42}`)
 		val := &Value{}
 
 		// --- When ---
-		err := Unmarshal(reg, []byte(data), val)
+		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrUnsType, err)
@@ -196,11 +205,11 @@ func Test_Unmarshal(t *testing.T) {
 		reg := NewRegistry()
 		cnv := convert.StringToTime(time.RFC3339Nano)
 		reg.Register(Time, convert.ToAnyAny(cnv))
-		data := `{"type": "time.Time", "value": "abc"}`
+		data := []byte(`{"type": "time.Time", "value": "abc"}`)
 		val := &Value{}
 
 		// --- When ---
-		err := Unmarshal(reg, []byte(data), val)
+		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvValue, err)
@@ -214,11 +223,11 @@ func Test_unmarshalEnvelope(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
 		reg.Register(Uint8, convert.ToAnyAny(convert.Float64ToUint8))
-		data := `{"type": "uint8", "value": 42}`
+		data := []byte(`{"type": "uint8", "value": 42}`)
 		val := &Value{}
 
 		// --- When ---
-		err := unmarshalEnvelope(reg, []byte(data), val)
+		err := unmarshalEnvelope(reg, data, val)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -229,10 +238,11 @@ func Test_unmarshalEnvelope(t *testing.T) {
 	t.Run("error - invalid JSON", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+		data := []byte(`{!!!}`)
 		val := &Value{}
 
 		// --- When ---
-		err := unmarshalEnvelope(reg, []byte(`{!!!}`), val)
+		err := unmarshalEnvelope(reg, data, val)
 
 		// --- Then ---
 		assert.ErrorContain(t, "invalid character", err)
@@ -241,10 +251,11 @@ func Test_unmarshalEnvelope(t *testing.T) {
 	t.Run("error - unsupported type", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+		data := []byte(`{"type":"unknown","value":1}`)
 		val := &Value{}
 
 		// --- When ---
-		err := unmarshalEnvelope(reg, []byte(`{"type":"unknown","value":1}`), val)
+		err := unmarshalEnvelope(reg, data, val)
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrUnsType, err)

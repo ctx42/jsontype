@@ -536,11 +536,11 @@ func Test_Value_MarshalJSON(t *testing.T) {
 func Test_Value_UnmarshalJSON(t *testing.T) {
 	t.Run("success envelope", func(t *testing.T) {
 		// --- Given ---
-		data := `{"type": "uint8", "value": 42}`
+		data := []byte(`{"type": "uint8", "value": 42}`)
 		val := &Value{}
 
 		// --- When ---
-		err := val.UnmarshalJSON([]byte(data))
+		err := val.UnmarshalJSON(data)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -550,10 +550,11 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 
 	t.Run("success bare string", func(t *testing.T) {
 		// --- Given ---
+		data := []byte(`"abc"`)
 		val := &Value{}
 
 		// --- When ---
-		err := val.UnmarshalJSON([]byte(`"abc"`))
+		err := val.UnmarshalJSON(data)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -563,10 +564,11 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 
 	t.Run("success bare bool true", func(t *testing.T) {
 		// --- Given ---
+		data := []byte(`true`)
 		val := &Value{}
 
 		// --- When ---
-		err := val.UnmarshalJSON([]byte(`true`))
+		err := val.UnmarshalJSON(data)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -576,10 +578,11 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 
 	t.Run("success bare bool false", func(t *testing.T) {
 		// --- Given ---
+		data := []byte(`false`)
 		val := &Value{}
 
 		// --- When ---
-		err := val.UnmarshalJSON([]byte(`false`))
+		err := val.UnmarshalJSON(data)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -589,10 +592,11 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 
 	t.Run("success bare null", func(t *testing.T) {
 		// --- Given ---
+		data := []byte(`null`)
 		val := &Value{}
 
 		// --- When ---
-		err := val.UnmarshalJSON([]byte(`null`))
+		err := val.UnmarshalJSON(data)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -602,10 +606,11 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 
 	t.Run("success bare float64", func(t *testing.T) {
 		// --- Given ---
+		data := []byte(`4.2`)
 		val := &Value{}
 
 		// --- When ---
-		err := val.UnmarshalJSON([]byte(`4.2`))
+		err := val.UnmarshalJSON(data)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -615,11 +620,11 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 
 	t.Run("error - unsupported type", func(t *testing.T) {
 		// --- Given ---
-		data := `{"type": "unknown", "value": 42}`
+		data := []byte(`{"type": "unknown", "value": 42}`)
 		val := &Value{}
 
 		// --- When ---
-		err := val.UnmarshalJSON([]byte(data))
+		err := val.UnmarshalJSON(data)
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrUnsType, err)
