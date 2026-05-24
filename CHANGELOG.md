@@ -1,3 +1,14 @@
+## v0.8.0 (Sun, 24 May 2026 19:16:31 UTC)
+- feat!: emit transparent types as bare JSON values.
+- perf: eliminate json.Unmarshal/Marshal on bool and float64 paths.
+- fix: validate full token in Unmarshal bool and null fast paths.
+- refactor: simplify token validation with string comparison.
+- test: declare byte payloads in Given, pin error messages.
+- refactor: standardize error message prefix to `jsontype:`.
+- test(helpers): improve Unmarshal coverage to 100%.
+- docs: polish README and doc comments.
+- fix(FromMap): avoid double jsontype: prefix on NewValue errors.
+
 ## v0.7.0 (Fri, 01 May 2026 20:09:25 UTC)
 - chore: Update to Go 1.26 and update dependencies.
 
