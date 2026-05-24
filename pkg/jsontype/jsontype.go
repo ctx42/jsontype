@@ -16,7 +16,8 @@ import (
 // registry is package level [Registry].
 var registry *Registry
 
-// Register registers converter for a given type name.
+// Register registers a converter for the given type name. Returns the
+// previous converter if one was already registered, nil otherwise.
 func Register(typ string, cnv convert.AnyToAny) convert.AnyToAny {
 	if cnv == nil {
 		return nil

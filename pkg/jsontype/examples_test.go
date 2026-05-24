@@ -59,7 +59,8 @@ func ExampleValue_UnmarshalJSON_safe() {
 }
 
 func ExampleRegister_custom() {
-	// Custom converter for a type named "seconds" representing duration in seconds.
+	// Custom converter for a type named "seconds" representing
+	// duration in seconds.
 	cnv := func(value float64) (time.Duration, error) {
 		return time.Duration(value) * time.Second, nil
 	}

@@ -10,13 +10,13 @@
   * [Custom Converters](#custom-converters)
 <!-- TOC -->
 
-`jsontype` is a small Go module that preserves Go types when marshaling values 
+`jsontype` is a small Go module that preserves Go types when marshaling values
 to JSON. It embeds type information directly into the JSON alongside the value.
 
 ## Why Use `jsontype`?
 
-Standard Go JSON marshaling loses specific type information for `interface{}` 
-(or `any`) fields. For example, a `uint64` becomes a `float64` after a
+Standard Go JSON marshaling loses specific type information for `any`
+fields. For example, a `uint64` becomes a `float64` after a
 round-trip through JSON if unmarshaled into a `map[string]any`. `jsontype`
 solves this by explicitly storing the type name.
 
@@ -36,6 +36,7 @@ go get github.com/ctx42/jsontype
 
 Create a `Value` instance encapsulating the value and its type.
 
+<!-- gmdoceg:pkg/jsontype/ExampleValue_MarshalJSON -->
 ```go
 jType := jsontype.New(uint(42))
 data, _ := json.Marshal(jType)
@@ -46,12 +47,11 @@ fmt.Println(string(data))
 ```
 
 Later when unmarshalling the library is looking at the `type` field, finds the
-matching converter in the package-level registry and converts the value. 
+matching converter in the package-level registry and converts the value.
 
-
+<!-- gmdoceg:pkg/jsontype/ExampleValue_UnmarshalJSON -->
 ```go
 data := []byte(`{"type": "uint", "value": 42}`)
-
 gType := &jsontype.Value{}
 _ = json.Unmarshal(data, gType)
 
@@ -62,7 +62,7 @@ fmt.Printf("%[1]v (%[1]T)\n", gType.GoValue())
 
 ## Type Registry
 
-The package-level registry provides converters for the following types: 
+The package-level registry provides converters for the following types:
 
 - `int`
 - `int8`
@@ -88,10 +88,12 @@ The package-level registry provides converters for the following types:
 
 You may register a custom converter for your custom type.
 
+<!-- gmdoceg:pkg/jsontype/ExampleRegister_custom -->
 ```go
-// Custom converter for a type named "seconds" representing duration in seconds.
+// Custom converter for a type named "seconds" representing
+// duration in seconds.
 cnv := func(value float64) (time.Duration, error) {
-    return time.Duration(value) * time.Second, nil
+	return time.Duration(value) * time.Second, nil
 }
 
 // Register converter.

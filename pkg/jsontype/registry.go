@@ -20,9 +20,13 @@ func NewRegistry() *Registry {
 	return &Registry{reg: make(map[string]convert.AnyToAny, 20)}
 }
 
-// Register registers a converter for the given type name. When the converter
-// for it already exists, it will return it, nil otherwise.
-func (reg *Registry) Register(name string, cnv convert.AnyToAny) convert.AnyToAny {
+// Register registers a converter for the given type name. Returns the
+// previous converter if one was already registered, nil otherwise.
+func (reg *Registry) Register(
+	name string,
+	cnv convert.AnyToAny,
+) convert.AnyToAny {
+
 	if cnv == nil {
 		return nil
 	}
