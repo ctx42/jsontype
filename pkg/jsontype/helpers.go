@@ -32,22 +32,19 @@ func Unmarshal(reg *Registry, data []byte, val *Value) error {
 		val.typ, val.val = String, s
 		return nil
 	case 't':
-		if len(data) != 4 ||
-			data[1] != 'r' || data[2] != 'u' || data[3] != 'e' {
+		if string(data) != "true" {
 			return fmt.Errorf("jsontype: invalid JSON token")
 		}
 		val.typ, val.val = Bool, true
 		return nil
 	case 'f':
-		if len(data) != 5 || data[1] != 'a' || data[2] != 'l' ||
-			data[3] != 's' || data[4] != 'e' {
+		if string(data) != "false" {
 			return fmt.Errorf("jsontype: invalid JSON token")
 		}
 		val.typ, val.val = Bool, false
 		return nil
 	case 'n':
-		if len(data) != 4 ||
-			data[1] != 'u' || data[2] != 'l' || data[3] != 'l' {
+		if string(data) != "null" {
 			return fmt.Errorf("jsontype: invalid JSON token")
 		}
 		val.typ, val.val = Nil, nil
@@ -63,7 +60,7 @@ func Unmarshal(reg *Registry, data []byte, val *Value) error {
 	return unmarshalEnvelope(reg, data, val)
 }
 
-// unmarshalEnvelope decodes the {"type":"...","value":...} form.
+// unmarshalEnvelope decodes the {"type": "...", "value": ...} form.
 func unmarshalEnvelope(reg *Registry, data []byte, val *Value) error {
 	tmp := struct {
 		Type  string `json:"type"`
