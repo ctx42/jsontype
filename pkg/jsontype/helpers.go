@@ -6,6 +6,7 @@ package jsontype
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/ctx42/convert/pkg/convert"
 )
@@ -30,19 +31,18 @@ func Unmarshal(reg *Registry, data []byte, val *Value) error {
 		}
 		val.typ, val.val = String, s
 		return nil
-	case 't', 'f':
-		var b bool
-		if err := json.Unmarshal(data, &b); err != nil {
-			return fmt.Errorf("jsontype: %w", err)
-		}
-		val.typ, val.val = Bool, b
+	case 't':
+		val.typ, val.val = Bool, true
+		return nil
+	case 'f':
+		val.typ, val.val = Bool, false
 		return nil
 	case 'n':
 		val.typ, val.val = Nil, nil
 		return nil
 	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-':
-		var f float64
-		if err := json.Unmarshal(data, &f); err != nil {
+		f, err := strconv.ParseFloat(string(data), 64)
+		if err != nil {
 			return fmt.Errorf("jsontype: %w", err)
 		}
 		val.typ, val.val = Float64, f

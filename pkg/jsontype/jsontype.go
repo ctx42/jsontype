@@ -141,7 +141,10 @@ func (val *Value) MarshalJSON() ([]byte, error) {
 		if !ok {
 			return nil, fmt.Errorf("MarshalJSON: %s: %w", val.typ, convert.ErrInvValue)
 		}
-		return json.Marshal(b)
+		if b {
+			return []byte("true"), nil
+		}
+		return []byte("false"), nil
 	case Nil:
 		if val.val != nil {
 			return nil, fmt.Errorf("MarshalJSON: %s: %w", val.typ, convert.ErrInvValue)
