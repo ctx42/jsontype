@@ -125,6 +125,9 @@ func (val *Value) Map() map[string]any {
 	return map[string]any{"type": val.typ, "value": val.val}
 }
 
+// MarshalJSON implements [json.Marshaler]. Transparent types (string,
+// bool, nil, float64) are emitted as bare JSON primitives; all other
+// types use the {"type": "...", "value": ...} envelope.
 func (val *Value) MarshalJSON() ([]byte, error) {
 	if val == nil || val.typ == "" {
 		return nil, convert.ErrInvValue

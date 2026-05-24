@@ -128,6 +128,42 @@ func Test_Unmarshal(t *testing.T) {
 		assert.Equal(t, -1.5, val.val)
 	})
 
+	t.Run("error - malformed bool true token", func(t *testing.T) {
+		// --- Given ---
+		reg := NewRegistry()
+		val := &Value{}
+
+		// --- When ---
+		err := Unmarshal(reg, []byte(`tXYZ`), val)
+
+		// --- Then ---
+		assert.ErrorContain(t, "invalid JSON token", err)
+	})
+
+	t.Run("error - malformed bool false token", func(t *testing.T) {
+		// --- Given ---
+		reg := NewRegistry()
+		val := &Value{}
+
+		// --- When ---
+		err := Unmarshal(reg, []byte(`fals`), val)
+
+		// --- Then ---
+		assert.ErrorContain(t, "invalid JSON token", err)
+	})
+
+	t.Run("error - malformed null token", func(t *testing.T) {
+		// --- Given ---
+		reg := NewRegistry()
+		val := &Value{}
+
+		// --- When ---
+		err := Unmarshal(reg, []byte(`nope`), val)
+
+		// --- Then ---
+		assert.ErrorContain(t, "invalid JSON token", err)
+	})
+
 	t.Run("error - invalid JSON", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()

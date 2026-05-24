@@ -396,7 +396,7 @@ func Test_Value_MarshalJSON(t *testing.T) {
 		assert.Equal(t, `"abc"`, string(have))
 	})
 
-	t.Run("success bool", func(t *testing.T) {
+	t.Run("success bool true", func(t *testing.T) {
 		// --- Given ---
 		val := &Value{typ: Bool, val: true}
 
@@ -406,6 +406,18 @@ func Test_Value_MarshalJSON(t *testing.T) {
 		// --- Then ---
 		assert.NoError(t, err)
 		assert.Equal(t, "true", string(have))
+	})
+
+	t.Run("success bool false", func(t *testing.T) {
+		// --- Given ---
+		val := &Value{typ: Bool, val: false}
+
+		// --- When ---
+		have, err := val.MarshalJSON()
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, "false", string(have))
 	})
 
 	t.Run("success nil", func(t *testing.T) {
@@ -549,7 +561,7 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 		assert.Equal(t, "abc", val.val)
 	})
 
-	t.Run("success bare bool", func(t *testing.T) {
+	t.Run("success bare bool true", func(t *testing.T) {
 		// --- Given ---
 		val := &Value{}
 
@@ -560,6 +572,19 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, Bool, val.typ)
 		assert.Equal(t, true, val.val)
+	})
+
+	t.Run("success bare bool false", func(t *testing.T) {
+		// --- Given ---
+		val := &Value{}
+
+		// --- When ---
+		err := val.UnmarshalJSON([]byte(`false`))
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Bool, val.typ)
+		assert.Equal(t, false, val.val)
 	})
 
 	t.Run("success bare null", func(t *testing.T) {
