@@ -5,6 +5,7 @@
 package jsontype
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"reflect"
@@ -207,11 +208,99 @@ func (val Value) MarshalJSON() ([]byte, error) {
 	return marshal(val.Map())
 }
 
-
 // UnmarshalJSON uses the package-level registry. To unmarshal with a custom
 // registry, call [Unmarshal] directly.
-func (val *Value) UnmarshalJSON(bytes []byte) error {
-	return Unmarshal(registry, bytes, val)
+func (val *Value) UnmarshalJSON(data []byte) error {
+	return Unmarshal(registry, data, val)
+}
+
+// Unmarshal unmarshals JSON representation of the value using [Registry].
+// Transparent types (string, bool, nil, float64) are detected by their JSON
+// shape and require no envelope. The envelope form is still accepted for all
+// types (back-compatibility). Whitespace around the JSON value is ignored.
+// The registry is used only for the envelope form; for it, a nil registry
+// returns [convert.ErrNilRegistry].
+func Unmarshal(reg *Registry, data []byte, val *Value) error {
+	if val == nil {
+		return fmt.Errorf("jsontype: nil Value: %w", convert.ErrInvValue)
+	}
+	data = bytes.Trim(data, " \t\r\n")
+	var first byte
+	if len(data) > 0 {
+		first = data[0]
+	}
+	switch first {
+	case '"':
+		var s string
+		if err := json.Unmarshal(data, &s); err != nil {
+			return fmt.Errorf("jsontype: %w", err)
+		}
+		val.typ, val.val = String, s
+		return nil
+	case 't':
+		if string(data) != "true" {
+			format := "jsontype: invalid JSON token: %w"
+			return fmt.Errorf(format, convert.ErrInvFormat)
+		}
+		val.typ, val.val = Bool, true
+		return nil
+	case 'f':
+		if string(data) != "false" {
+			format := "jsontype: invalid JSON token: %w"
+			return fmt.Errorf(format, convert.ErrInvFormat)
+		}
+		val.typ, val.val = Bool, false
+		return nil
+	case 'n':
+		if string(data) != "null" {
+			format := "jsontype: invalid JSON token: %w"
+			return fmt.Errorf(format, convert.ErrInvFormat)
+		}
+		val.typ, val.val = Nil, nil
+		return nil
+	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-':
+		var f float64
+		if err := json.Unmarshal(data, &f); err != nil {
+			return fmt.Errorf("jsontype: %w", err)
+		}
+		val.typ, val.val = Float64, f
+		return nil
+	}
+	return unmarshalEnvelope(reg, data, val)
+}
+
+// unmarshalEnvelope decodes the {"type": "...", "value": ...} form.
+func unmarshalEnvelope(reg *Registry, data []byte, val *Value) error {
+	tmp := struct {
+		Type  string          `json:"type"`
+		Value json.RawMessage `json:"value"`
+	}{}
+	if reg == nil {
+		return fmt.Errorf("jsontype: %w", convert.ErrNilRegistry)
+	}
+	if err := json.Unmarshal(data, &tmp); err != nil {
+		return fmt.Errorf("jsontype: %w", err)
+	}
+	cnv, num := reg.converter(tmp.Type)
+	if cnv == nil {
+		return fmt.Errorf("jsontype: %w: %s", convert.ErrUnsType, tmp.Type)
+	}
+	var value any
+	if len(tmp.Value) > 0 {
+		dec := json.NewDecoder(bytes.NewReader(tmp.Value))
+		if num {
+			dec.UseNumber()
+		}
+		if err := dec.Decode(&value); err != nil {
+			return fmt.Errorf("jsontype: %w", err)
+		}
+	}
+	ret, err := cnv(value)
+	if err != nil {
+		return fmt.Errorf("jsontype: %w", err)
+	}
+	val.typ, val.val = tmp.Type, ret
+	return nil
 }
 
 // FromMap constructs an instance of [Value] from its map representation. It
