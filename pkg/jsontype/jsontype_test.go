@@ -756,102 +756,6 @@ func Test_Value_MarshalJSON_roundtrip_tabular(t *testing.T) {
 }
 
 func Test_Value_UnmarshalJSON(t *testing.T) {
-	t.Run("success envelope", func(t *testing.T) {
-		// --- Given ---
-		data := []byte(`{"type": "uint8", "value": 42}`)
-
-		val := &Value{}
-
-		// --- When ---
-		err := val.UnmarshalJSON(data)
-
-		// --- Then ---
-		assert.NoError(t, err)
-
-		assert.Equal(t, Uint8, val.typ)
-		assert.Equal(t, uint8(42), val.val)
-	})
-
-	t.Run("success bare string", func(t *testing.T) {
-		// --- Given ---
-		data := []byte(`"abc"`)
-
-		val := &Value{}
-
-		// --- When ---
-		err := val.UnmarshalJSON(data)
-
-		// --- Then ---
-		assert.NoError(t, err)
-
-		assert.Equal(t, String, val.typ)
-		assert.Equal(t, "abc", val.val)
-	})
-
-	t.Run("success bare bool true", func(t *testing.T) {
-		// --- Given ---
-		data := []byte(`true`)
-
-		val := &Value{}
-
-		// --- When ---
-		err := val.UnmarshalJSON(data)
-
-		// --- Then ---
-		assert.NoError(t, err)
-
-		assert.Equal(t, Bool, val.typ)
-		assert.Equal(t, true, val.val)
-	})
-
-	t.Run("success bare bool false", func(t *testing.T) {
-		// --- Given ---
-		data := []byte(`false`)
-
-		val := &Value{}
-
-		// --- When ---
-		err := val.UnmarshalJSON(data)
-
-		// --- Then ---
-		assert.NoError(t, err)
-
-		assert.Equal(t, Bool, val.typ)
-		assert.Equal(t, false, val.val)
-	})
-
-	t.Run("success bare null", func(t *testing.T) {
-		// --- Given ---
-		data := []byte(`null`)
-
-		val := &Value{}
-
-		// --- When ---
-		err := val.UnmarshalJSON(data)
-
-		// --- Then ---
-		assert.NoError(t, err)
-
-		assert.Equal(t, Nil, val.typ)
-		assert.Nil(t, val.val)
-	})
-
-	t.Run("success bare float64", func(t *testing.T) {
-		// --- Given ---
-		data := []byte(`4.2`)
-
-		val := &Value{}
-
-		// --- When ---
-		err := val.UnmarshalJSON(data)
-
-		// --- Then ---
-		assert.NoError(t, err)
-
-		assert.Equal(t, Float64, val.typ)
-		assert.Equal(t, 4.2, val.val)
-	})
-
 	t.Run("error - unsupported type", func(t *testing.T) {
 		// --- Given ---
 		data := []byte(`{"type": "unknown", "value": 42}`)
@@ -996,10 +900,16 @@ func Test_Value_UnmarshalJSON_success_tabular(t *testing.T) {
 			"abc",
 		},
 		{
-			"bare bool",
+			"bare bool true",
 			"bool",
 			`true`,
 			true,
+		},
+		{
+			"bare bool false",
+			"bool",
+			`false`,
+			false,
 		},
 		{
 			"bare null",
