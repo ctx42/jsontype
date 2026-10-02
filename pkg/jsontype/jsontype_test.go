@@ -434,6 +434,19 @@ func Test_NewValue(t *testing.T) {
 		assert.Nil(t, have)
 	})
 
+	t.Run("error - nil value with nil registry", func(t *testing.T) {
+		// --- Given ---
+		opt := WithRegistry(nil)
+
+		// --- When ---
+		have, err := NewValue(nil, opt)
+
+		// --- Then ---
+		assert.ErrorIs(t, convert.ErrNilRegistry, err)
+		assert.ErrorEqual(t, "jsontype: nil registry", err)
+		assert.Nil(t, have)
+	})
+
 	t.Run("error - unsupported type", func(t *testing.T) {
 		// --- Given ---
 		v := MyType(42)
