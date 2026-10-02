@@ -12,6 +12,7 @@ import (
 func Test_WithRegistry(t *testing.T) {
 	// --- Given ---
 	reg := NewRegistry()
+
 	ops := &Options{}
 
 	// --- When ---
