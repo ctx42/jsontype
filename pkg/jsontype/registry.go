@@ -9,7 +9,8 @@ import (
 	"github.com/ctx42/convert/pkg/convert"
 )
 
-// Registry maps type names to their converters.
+// Registry maps type names to their converters. The zero value is an empty
+// registry ready to use.
 type Registry struct {
 	reg map[string]convert.AnyToAny
 	num map[string]bool // Converters receiving numbers as json.Number.
@@ -37,6 +38,7 @@ func (reg *Registry) Register(
 	reg.mx.Lock()
 	defer reg.mx.Unlock()
 
+	reg.alloc()
 	old := reg.reg[name]
 	reg.reg[name] = cnv
 	delete(reg.num, name)
@@ -55,6 +57,7 @@ func (reg *Registry) registerNumber(
 	reg.mx.Lock()
 	defer reg.mx.Unlock()
 
+	reg.alloc()
 	old := reg.reg[name]
 	reg.reg[name] = cnv
 	reg.num[name] = true
@@ -75,4 +78,15 @@ func (reg *Registry) converter(typ string) (convert.AnyToAny, bool) {
 	reg.mx.RLock()
 	defer reg.mx.RUnlock()
 	return reg.reg[typ], reg.num[typ]
+}
+
+// alloc allocates the maps of a zero value registry. It must be called with
+// the write lock held.
+func (reg *Registry) alloc() {
+	if reg.reg == nil {
+		reg.reg = make(map[string]convert.AnyToAny, 20)
+	}
+	if reg.num == nil {
+		reg.num = make(map[string]bool, 20)
+	}
 }

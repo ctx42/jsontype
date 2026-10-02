@@ -66,6 +66,19 @@ func Test_Registry_Register(t *testing.T) {
 		assert.Len(t, 0, reg.num)
 	})
 
+	t.Run("zero value registry", func(t *testing.T) {
+		// --- Given ---
+		cnv := func(value any) (any, error) { return value, nil }
+		var reg Registry
+
+		// --- When ---
+		have := reg.Register(Int, cnv)
+
+		// --- Then ---
+		assert.Nil(t, have)
+		assert.Same(t, cnv, reg.Converter(Int))
+	})
+
 	t.Run("register nil converter", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
@@ -109,6 +122,20 @@ func Test_Registry_registerNumber(t *testing.T) {
 		assert.Same(t, cnv0, have)
 		val, _ := assert.HasKey(t, Int, reg.reg)
 		assert.Same(t, cnv1, val)
+		assert.True(t, reg.num[Int])
+	})
+
+	t.Run("zero value registry", func(t *testing.T) {
+		// --- Given ---
+		cnv := func(value any) (any, error) { return value, nil }
+		var reg Registry
+
+		// --- When ---
+		have := reg.registerNumber(Int, cnv)
+
+		// --- Then ---
+		assert.Nil(t, have)
+		assert.Same(t, cnv, reg.Converter(Int))
 		assert.True(t, reg.num[Int])
 	})
 }
@@ -178,5 +205,33 @@ func Test_Registry_converter(t *testing.T) {
 		// --- Then ---
 		assert.Nil(t, have)
 		assert.False(t, num)
+	})
+}
+
+func Test_Registry_alloc(t *testing.T) {
+	t.Run("zero value", func(t *testing.T) {
+		// --- Given ---
+		var reg Registry
+
+		// --- When ---
+		reg.alloc()
+
+		// --- Then ---
+		assert.NotNil(t, reg.reg)
+		assert.NotNil(t, reg.num)
+	})
+
+	t.Run("keeps existing maps", func(t *testing.T) {
+		// --- Given ---
+		cnv := func(value any) (any, error) { return value, nil }
+		reg := NewRegistry()
+		reg.registerNumber(Int, cnv)
+
+		// --- When ---
+		reg.alloc()
+
+		// --- Then ---
+		assert.Same(t, cnv, reg.reg[Int])
+		assert.True(t, reg.num[Int])
 	})
 }
