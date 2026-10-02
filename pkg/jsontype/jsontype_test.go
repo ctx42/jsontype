@@ -676,6 +676,170 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 	})
 }
 
+func Test_Value_UnmarshalJSON_success_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		typ  string
+		json string
+		want any
+	}{
+		{
+			"int",
+			"int",
+			`{"type": "int", "value": 42}`,
+			42,
+		},
+		{
+			"int8",
+			"int8",
+			`{"type": "int8", "value": 42}`,
+			int8(42),
+		},
+		{
+			"int16",
+			"int16",
+			`{"type": "int16", "value": 42}`,
+			int16(42),
+		},
+		{
+			"int32",
+			"int32",
+			`{"type": "int32", "value": 42}`,
+			int32(42),
+		},
+		{
+			"int64",
+			"int64",
+			`{"type": "int64", "value": 42}`,
+			int64(42),
+		},
+		{
+			"uint",
+			"uint",
+			`{"type": "uint", "value": 42}`,
+			uint(42),
+		},
+		{
+			"uint8",
+			"uint8",
+			`{"type": "uint8", "value": 42}`,
+			uint8(42),
+		},
+		{
+			"uint16",
+			"uint16",
+			`{"type": "uint16", "value": 42}`,
+			uint16(42),
+		},
+		{
+			"uint32",
+			"uint32",
+			`{"type": "uint32", "value": 42}`,
+			uint32(42),
+		},
+		{
+			"uint64",
+			"uint64",
+			`{"type": "uint64", "value": 42}`,
+			uint64(42),
+		},
+		{
+			"float32",
+			"float32",
+			`{"type": "float32", "value": 42}`,
+			float32(42),
+		},
+		{
+			"float64",
+			"float64",
+			`{"type": "float64", "value": 4.2}`,
+			4.2,
+		},
+		{
+			"byte",
+			"byte",
+			`{"type": "byte", "value": 42}`,
+			byte(42),
+		},
+		{
+			"rune",
+			"rune",
+			`{"type": "rune", "value": 42}`,
+			rune(42),
+		},
+		{
+			"string",
+			"string",
+			`{"type": "string", "value": "abc"}`,
+			"abc",
+		},
+		{
+			"bool",
+			"bool",
+			`{"type": "bool", "value": true}`,
+			true,
+		},
+		{
+			"time.Duration",
+			"time.Duration",
+			`{"type": "time.Duration", "value": "42s"}`,
+			42 * time.Second,
+		},
+		{
+			"time.Time",
+			"time.Time",
+			`{"type": "time.Time", "value": "2000-01-02T03:04:05.6Z"}`,
+			time.Date(2000, time.January, 2, 3, 4, 5, 600000000, time.UTC),
+		},
+		{
+			"nil",
+			"nil",
+			`{"type": "nil", "value": null}`,
+			nil,
+		},
+		{
+			"bare string",
+			"string",
+			`"abc"`,
+			"abc",
+		},
+		{
+			"bare bool",
+			"bool",
+			`true`,
+			true,
+		},
+		{
+			"bare null",
+			"nil",
+			`null`,
+			nil,
+		},
+		{
+			"bare float64",
+			"float64",
+			`4.2`,
+			4.2,
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- Given ---
+			val := &Value{}
+
+			// --- When ---
+			err := val.UnmarshalJSON([]byte(tc.json))
+
+			// --- Then ---
+			assert.NoError(t, err)
+			assert.Equal(t, tc.typ, val.typ)
+			assert.Equal(t, tc.want, val.val)
+		})
+	}
+}
+
 func Test_Unmarshal(t *testing.T) {
 	t.Run("success envelope", func(t *testing.T) {
 		// --- Given ---
@@ -1317,168 +1481,4 @@ func Test_AsValue(t *testing.T) {
 		assert.ErrorEqual(t, "jsontype: invalid type", err)
 		assert.Nil(t, have)
 	})
-}
-
-func Test_Value_UnmarshalJSON_success_tabular(t *testing.T) {
-	tt := []struct {
-		testN string
-
-		typ  string
-		json string
-		want any
-	}{
-		{
-			"int",
-			"int",
-			`{"type": "int", "value": 42}`,
-			42,
-		},
-		{
-			"int8",
-			"int8",
-			`{"type": "int8", "value": 42}`,
-			int8(42),
-		},
-		{
-			"int16",
-			"int16",
-			`{"type": "int16", "value": 42}`,
-			int16(42),
-		},
-		{
-			"int32",
-			"int32",
-			`{"type": "int32", "value": 42}`,
-			int32(42),
-		},
-		{
-			"int64",
-			"int64",
-			`{"type": "int64", "value": 42}`,
-			int64(42),
-		},
-		{
-			"uint",
-			"uint",
-			`{"type": "uint", "value": 42}`,
-			uint(42),
-		},
-		{
-			"uint8",
-			"uint8",
-			`{"type": "uint8", "value": 42}`,
-			uint8(42),
-		},
-		{
-			"uint16",
-			"uint16",
-			`{"type": "uint16", "value": 42}`,
-			uint16(42),
-		},
-		{
-			"uint32",
-			"uint32",
-			`{"type": "uint32", "value": 42}`,
-			uint32(42),
-		},
-		{
-			"uint64",
-			"uint64",
-			`{"type": "uint64", "value": 42}`,
-			uint64(42),
-		},
-		{
-			"float32",
-			"float32",
-			`{"type": "float32", "value": 42}`,
-			float32(42),
-		},
-		{
-			"float64",
-			"float64",
-			`{"type": "float64", "value": 4.2}`,
-			4.2,
-		},
-		{
-			"byte",
-			"byte",
-			`{"type": "byte", "value": 42}`,
-			byte(42),
-		},
-		{
-			"rune",
-			"rune",
-			`{"type": "rune", "value": 42}`,
-			rune(42),
-		},
-		{
-			"string",
-			"string",
-			`{"type": "string", "value": "abc"}`,
-			"abc",
-		},
-		{
-			"bool",
-			"bool",
-			`{"type": "bool", "value": true}`,
-			true,
-		},
-		{
-			"time.Duration",
-			"time.Duration",
-			`{"type": "time.Duration", "value": "42s"}`,
-			42 * time.Second,
-		},
-		{
-			"time.Time",
-			"time.Time",
-			`{"type": "time.Time", "value": "2000-01-02T03:04:05.6Z"}`,
-			time.Date(2000, time.January, 2, 3, 4, 5, 600000000, time.UTC),
-		},
-		{
-			"nil",
-			"nil",
-			`{"type": "nil", "value": null}`,
-			nil,
-		},
-		{
-			"bare string",
-			"string",
-			`"abc"`,
-			"abc",
-		},
-		{
-			"bare bool",
-			"bool",
-			`true`,
-			true,
-		},
-		{
-			"bare null",
-			"nil",
-			`null`,
-			nil,
-		},
-		{
-			"bare float64",
-			"float64",
-			`4.2`,
-			4.2,
-		},
-	}
-
-	for _, tc := range tt {
-		t.Run(tc.testN, func(t *testing.T) {
-			// --- Given ---
-			val := &Value{}
-
-			// --- When ---
-			err := val.UnmarshalJSON([]byte(tc.json))
-
-			// --- Then ---
-			assert.NoError(t, err)
-			assert.Equal(t, tc.typ, val.typ)
-			assert.Equal(t, tc.want, val.val)
-		})
-	}
 }
