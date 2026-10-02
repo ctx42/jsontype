@@ -378,13 +378,22 @@ func builtinGoName(typ string) (string, bool) {
 }
 
 // AsValue converts a map in the format returned by [Value.Map] into a [Value].
-// If v is already a *Value, it returns that value directly. Returns an error
-// if conversion is not possible. The options are passed to [FromMap].
+// If v is already a non-nil *Value, it returns that value directly; for a
+// [Value] it returns a pointer to its copy. Returns an error if conversion is
+// not possible. The options are passed to [FromMap].
 func AsValue(v any, opts ...Option) (*Value, error) {
-	if val, ok := v.(*Value); ok {
+	switch val := v.(type) {
+	case *Value:
+		if val == nil {
+			format := "jsontype: nil Value: %w"
+			return nil, fmt.Errorf(format, convert.ErrInvValue)
+		}
 		return val, nil
-	}
-	if val, ok := v.(map[string]any); ok {
+
+	case Value:
+		return &val, nil
+
+	case map[string]any:
 		return FromMap(val, opts...)
 	}
 	return nil, fmt.Errorf("jsontype: %w", convert.ErrInvType)

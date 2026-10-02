@@ -1811,6 +1811,32 @@ func Test_AsValue(t *testing.T) {
 		assert.Equal(t, MyType(42), have.val)
 	})
 
+	t.Run("Value passed by value", func(t *testing.T) {
+		// --- Given ---
+		val := *New(uint32(42))
+
+		// --- When ---
+		have, err := AsValue(val)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Uint32, have.typ)
+		assert.Equal(t, uint32(42), have.val)
+	})
+
+	t.Run("error - nil Value", func(t *testing.T) {
+		// --- Given ---
+		var val *Value
+
+		// --- When ---
+		have, err := AsValue(val)
+
+		// --- Then ---
+		assert.ErrorIs(t, convert.ErrInvValue, err)
+		assert.ErrorEqual(t, "jsontype: nil Value: invalid value", err)
+		assert.Nil(t, have)
+	})
+
 	t.Run("error - not a map", func(t *testing.T) {
 		// --- When ---
 		have, err := AsValue(nil)
