@@ -26,7 +26,9 @@ func Test_Register(t *testing.T) {
 	t.Run("new converter", func(t *testing.T) {
 		// --- Given ---
 		isolateRegistry(t)
+
 		name := t.Name()
+
 		cnv := func(any) (any, error) { return nil, nil }
 
 		// --- When ---
@@ -34,15 +36,19 @@ func Test_Register(t *testing.T) {
 
 		// --- Then ---
 		assert.Nil(t, have)
+
 		assert.Same(t, cnv, registry.reg[name])
 	})
 
 	t.Run("overwrite existing converter", func(t *testing.T) {
 		// --- Given ---
 		isolateRegistry(t)
+
 		name := t.Name()
+
 		cnv0 := func(any) (any, error) { return nil, nil }
 		Register(name, cnv0)
+
 		cnv1 := func(any) (any, error) { return nil, nil }
 
 		// --- When ---
@@ -55,7 +61,9 @@ func Test_Register(t *testing.T) {
 	t.Run("nil converter is nop", func(t *testing.T) {
 		// --- Given ---
 		isolateRegistry(t)
+
 		name := t.Name()
+
 		cnv := func(any) (any, error) { return nil, nil }
 		Register(name, cnv)
 
@@ -64,6 +72,7 @@ func Test_Register(t *testing.T) {
 
 		// --- Then ---
 		assert.Nil(t, have)
+
 		assert.Same(t, cnv, registry.reg[name])
 	})
 }
@@ -406,9 +415,12 @@ func Test_NewValue(t *testing.T) {
 	t.Run("use custom registry", func(t *testing.T) {
 		// --- Given ---
 		cnv := func(value any) (any, error) { return value, nil }
+
 		reg := NewRegistry()
 		reg.Register("jsontype.MyType", cnv)
+
 		v := MyType(42)
+
 		opt := WithRegistry(reg)
 
 		// --- When ---
@@ -423,6 +435,7 @@ func Test_NewValue(t *testing.T) {
 	t.Run("error - nil registry", func(t *testing.T) {
 		// --- Given ---
 		v := 42
+
 		opt := WithRegistry(nil)
 
 		// --- When ---
@@ -723,6 +736,7 @@ func Test_Value_MarshalJSON_roundtrip_tabular(t *testing.T) {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- Given ---
 			data := must.Value(json.Marshal(tc.val))
+
 			have := &Value{}
 
 			// --- When ---
@@ -730,6 +744,7 @@ func Test_Value_MarshalJSON_roundtrip_tabular(t *testing.T) {
 
 			// --- Then ---
 			assert.NoError(t, err)
+
 			assert.Equal(t, tc.val.typ, have.typ)
 			assert.Equal(t, tc.val.val, have.val)
 		})
@@ -740,6 +755,7 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 	t.Run("success envelope", func(t *testing.T) {
 		// --- Given ---
 		data := []byte(`{"type": "uint8", "value": 42}`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -747,6 +763,7 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Uint8, val.typ)
 		assert.Equal(t, uint8(42), val.val)
 	})
@@ -754,6 +771,7 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 	t.Run("success bare string", func(t *testing.T) {
 		// --- Given ---
 		data := []byte(`"abc"`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -761,6 +779,7 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, String, val.typ)
 		assert.Equal(t, "abc", val.val)
 	})
@@ -768,6 +787,7 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 	t.Run("success bare bool true", func(t *testing.T) {
 		// --- Given ---
 		data := []byte(`true`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -775,6 +795,7 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Bool, val.typ)
 		assert.Equal(t, true, val.val)
 	})
@@ -782,6 +803,7 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 	t.Run("success bare bool false", func(t *testing.T) {
 		// --- Given ---
 		data := []byte(`false`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -789,6 +811,7 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Bool, val.typ)
 		assert.Equal(t, false, val.val)
 	})
@@ -796,6 +819,7 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 	t.Run("success bare null", func(t *testing.T) {
 		// --- Given ---
 		data := []byte(`null`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -803,6 +827,7 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Nil, val.typ)
 		assert.Nil(t, val.val)
 	})
@@ -810,6 +835,7 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 	t.Run("success bare float64", func(t *testing.T) {
 		// --- Given ---
 		data := []byte(`4.2`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -817,6 +843,7 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Float64, val.typ)
 		assert.Equal(t, 4.2, val.val)
 	})
@@ -824,6 +851,7 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 	t.Run("error - unsupported type", func(t *testing.T) {
 		// --- Given ---
 		data := []byte(`{"type": "unknown", "value": 42}`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -987,6 +1015,7 @@ func Test_Value_UnmarshalJSON_success_tabular(t *testing.T) {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- Given ---
 			data := []byte(tc.json)
+
 			val := &Value{}
 
 			// --- When ---
@@ -994,6 +1023,7 @@ func Test_Value_UnmarshalJSON_success_tabular(t *testing.T) {
 
 			// --- Then ---
 			assert.NoError(t, err)
+
 			assert.Equal(t, tc.typ, val.typ)
 			assert.Equal(t, tc.want, val.val)
 		})
@@ -1005,7 +1035,9 @@ func Test_Unmarshal(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
 		reg.Register(Uint8, convert.ToAnyAny(convert.Float64ToUint8))
+
 		data := []byte(`{"type": "uint8", "value": 42}`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1013,6 +1045,7 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Uint8, val.typ)
 		assert.Equal(t, uint8(42), val.val)
 	})
@@ -1021,7 +1054,9 @@ func Test_Unmarshal(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
 		reg.Register(Nil, NilConverter)
+
 		data := []byte(`{"type": "nil", "value": null}`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1029,6 +1064,7 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, "nil", val.typ)
 		assert.Nil(t, val.val)
 	})
@@ -1036,7 +1072,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success envelope max uint64", func(t *testing.T) {
 		// --- Given ---
 		reg := DefaultRegistry()
+
 		data := []byte(`{"type": "uint64", "value": 18446744073709551615}`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1044,6 +1082,7 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Uint64, val.typ)
 		assert.Equal(t, uint64(math.MaxUint64), val.val)
 	})
@@ -1051,7 +1090,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success envelope large int64", func(t *testing.T) {
 		// --- Given ---
 		reg := DefaultRegistry()
+
 		data := []byte(`{"type": "int64", "value": -9007199254740993}`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1059,6 +1100,7 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Int64, val.typ)
 		assert.Equal(t, int64(-9007199254740993), val.val)
 	})
@@ -1066,7 +1108,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success envelope duration in nanoseconds", func(t *testing.T) {
 		// --- Given ---
 		reg := DefaultRegistry()
+
 		data := []byte(`{"type": "time.Duration", "value": 60000000000}`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1074,6 +1118,7 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Duration, val.typ)
 		assert.Equal(t, time.Minute, val.val)
 	})
@@ -1081,7 +1126,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success envelope float32", func(t *testing.T) {
 		// --- Given ---
 		reg := DefaultRegistry()
+
 		data := []byte(`{"type": "float32", "value": 0.1}`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1089,6 +1136,7 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Float32, val.typ)
 		assert.Equal(t, float32(0.1), val.val)
 	})
@@ -1097,7 +1145,9 @@ func Test_Unmarshal(t *testing.T) {
 		// --- Given ---
 		reg := DefaultRegistry()
 		reg.Register(Uint64, func(value any) (any, error) { return value, nil })
+
 		data := []byte(`{"type": "uint64", "value": 42}`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1105,6 +1155,7 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Uint64, val.typ)
 		assert.Equal(t, 42.0, val.val)
 	})
@@ -1112,7 +1163,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success envelope without value", func(t *testing.T) {
 		// --- Given ---
 		reg := DefaultRegistry()
+
 		data := []byte(`{"type": "nil"}`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1120,6 +1173,7 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Nil, val.typ)
 		assert.Nil(t, val.val)
 	})
@@ -1127,7 +1181,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success bare string", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(`"abc"`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1135,6 +1191,7 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, String, val.typ)
 		assert.Equal(t, "abc", val.val)
 	})
@@ -1142,7 +1199,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success bare bool true", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(`true`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1150,6 +1209,7 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Bool, val.typ)
 		assert.Equal(t, true, val.val)
 	})
@@ -1157,7 +1217,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success bare bool false", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(`false`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1165,6 +1227,7 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Bool, val.typ)
 		assert.Equal(t, false, val.val)
 	})
@@ -1172,7 +1235,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success bare null", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(`null`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1180,6 +1245,7 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Nil, val.typ)
 		assert.Nil(t, val.val)
 	})
@@ -1187,7 +1253,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success bare float64", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(`4.2`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1195,6 +1263,7 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Float64, val.typ)
 		assert.Equal(t, 4.2, val.val)
 	})
@@ -1202,7 +1271,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success bare negative float64", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(`-1.5`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1210,6 +1281,7 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Float64, val.typ)
 		assert.Equal(t, -1.5, val.val)
 	})
@@ -1217,7 +1289,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success surrounding whitespace", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(" \t\r\ntrue\n")
+
 		val := &Value{}
 
 		// --- When ---
@@ -1225,6 +1299,7 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Bool, val.typ)
 		assert.Equal(t, true, val.val)
 	})
@@ -1232,7 +1307,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success bare float64 trailing newline", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte("1\n")
+
 		val := &Value{}
 
 		// --- When ---
@@ -1240,6 +1317,7 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Float64, val.typ)
 		assert.Equal(t, 1.0, val.val)
 	})
@@ -1247,7 +1325,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("error - infinity", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(`-Inf`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1261,7 +1341,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("error - hexadecimal float", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(`0x1p4`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1275,6 +1357,7 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("success bare value with nil registry", func(t *testing.T) {
 		// --- Given ---
 		data := []byte(`"abc"`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1282,6 +1365,7 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, String, val.typ)
 		assert.Equal(t, "abc", val.val)
 	})
@@ -1289,6 +1373,7 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("error - nil registry", func(t *testing.T) {
 		// --- Given ---
 		data := []byte(`{"type": "uint8", "value": 42}`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1302,6 +1387,7 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("error - nil value", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(`"abc"`)
 
 		// --- When ---
@@ -1315,7 +1401,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("error - invalid bare string", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(`"abc`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1328,7 +1416,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("error - malformed bool true token", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(`tXYZ`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1343,7 +1433,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("error - malformed bool false token", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(`fals`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1358,7 +1450,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("error - malformed null token", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(`nope`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1373,7 +1467,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("error - invalid number", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(`1abc`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1387,7 +1483,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("error - invalid JSON", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(`{!!!}`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1403,7 +1501,9 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("error - unsupported type", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(`{"type": "unknown", "value": 42}`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1417,9 +1517,12 @@ func Test_Unmarshal(t *testing.T) {
 	t.Run("error - invalid format", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		cnv := convert.StringToTime(time.RFC3339Nano)
 		reg.Register(Time, convert.ToAnyAny(cnv))
+
 		data := []byte(`{"type": "time.Time", "value": "abc"}`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1437,7 +1540,9 @@ func Test_unmarshalEnvelope(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
 		reg.Register(Uint8, convert.ToAnyAny(convert.Float64ToUint8))
+
 		data := []byte(`{"type": "uint8", "value": 42}`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1445,6 +1550,7 @@ func Test_unmarshalEnvelope(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
+
 		assert.Equal(t, Uint8, val.typ)
 		assert.Equal(t, uint8(42), val.val)
 	})
@@ -1452,7 +1558,9 @@ func Test_unmarshalEnvelope(t *testing.T) {
 	t.Run("error - invalid JSON", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(`{!!!}`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1465,7 +1573,9 @@ func Test_unmarshalEnvelope(t *testing.T) {
 	t.Run("error - unsupported type", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
+
 		data := []byte(`{"type":"unknown","value":1}`)
+
 		val := &Value{}
 
 		// --- When ---
@@ -1478,7 +1588,9 @@ func Test_unmarshalEnvelope(t *testing.T) {
 	t.Run("error - value unchanged on conversion error", func(t *testing.T) {
 		// --- Given ---
 		reg := DefaultRegistry()
+
 		data := []byte(`{"type": "uint8", "value": 99999}`)
+
 		val := &Value{typ: String, val: "abc"}
 
 		// --- When ---
@@ -1486,6 +1598,7 @@ func Test_unmarshalEnvelope(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvRange, err)
+
 		assert.Equal(t, String, val.typ)
 		assert.Equal(t, "abc", val.val)
 	})
@@ -1497,9 +1610,12 @@ func Test_FromMap(t *testing.T) {
 	t.Run("use custom registry", func(t *testing.T) {
 		// --- Given ---
 		cnv := func(value any) (any, error) { return value, nil }
+
 		reg := NewRegistry()
 		reg.Register("jsontype.MyType", cnv)
+
 		m := map[string]any{"type": "jsontype.MyType", "value": MyType(42)}
+
 		opt := WithRegistry(reg)
 
 		// --- When ---
@@ -1553,6 +1669,7 @@ func Test_FromMap(t *testing.T) {
 	t.Run("custom type name", func(t *testing.T) {
 		// --- Given ---
 		cnv := func(value any) (any, error) { return value, nil }
+
 		reg := NewRegistry()
 		reg.Register("seconds", cnv)
 
@@ -1810,10 +1927,14 @@ func Test_AsValue(t *testing.T) {
 	t.Run("map with custom registry", func(t *testing.T) {
 		// --- Given ---
 		type MyType int
+
 		cnv := func(value any) (any, error) { return value, nil }
+
 		reg := NewRegistry()
 		reg.Register("jsontype.MyType", cnv)
+
 		m := map[string]any{"type": "jsontype.MyType", "value": MyType(42)}
+
 		opt := WithRegistry(reg)
 
 		// --- When ---
