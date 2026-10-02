@@ -31,12 +31,12 @@ func ExampleValue_UnmarshalJSON() {
 }
 
 func ExampleValue_MarshalJSON_time() {
-	// Create a `jsontype.Value` and marshall it.
+	// Create a `jsontype.Value` and marshal it.
 	tim := time.Date(2000, 1, 2, 3, 4, 5, 600000000, time.UTC)
 	jType := jsontype.New(tim)
 	data, _ := json.Marshal(jType)
 
-	// Unmarshall the value and show its Go type.
+	// Unmarshal the value and show its Go type.
 	gType := &jsontype.Value{}
 	_ = json.Unmarshal(data, gType)
 

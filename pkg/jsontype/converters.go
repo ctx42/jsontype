@@ -13,7 +13,7 @@ import (
 )
 
 // NilConverter expects value to be nil, otherwise returns an error. On success,
-// it returns nil and nil error.
+// it returns nil and a nil error.
 func NilConverter(value any) (any, error) {
 	if value != nil {
 		format := "jsontype: requires a nil value: %w"

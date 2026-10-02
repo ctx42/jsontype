@@ -14,7 +14,7 @@ import (
 	"github.com/ctx42/convert/pkg/convert"
 )
 
-// registry is package level [Registry].
+// registry is the package-level [Registry].
 var registry = DefaultRegistry()
 
 // Register registers a converter for the given type name. Returns the
@@ -52,7 +52,8 @@ const (
 	Nil      = "nil"
 )
 
-// DefaultRegistry returns default registry configuration.
+// DefaultRegistry returns a new [Registry] with converters for all the
+// built-in type names.
 func DefaultRegistry() *Registry {
 	reg := NewRegistry()
 
@@ -126,15 +127,16 @@ type Value struct {
 	val any    // The value to encode.
 }
 
-// New returns new instance of [Value] for the given value. The type name is
+// New returns a new instance of [Value] for the given value. The type name is
 // set to the name returned from `reflect.TypeFor[T]().String()`.
 func New[T any](value T) *Value {
 	return &Value{typ: reflect.TypeFor[T]().String(), val: value}
 }
 
 // NewValue works like [New], but it supports untyped nil as the value and
-// checks if the type has a registered converter. Returns error when the type
-// has no registered converter or the registry set with [WithRegistry] is nil.
+// checks if the type has a registered converter. Returns an error when the
+// type has no registered converter or the registry set with [WithRegistry]
+// is nil.
 func NewValue(val any, opts ...Option) (*Value, error) {
 	if val == nil {
 		return &Value{typ: Nil, val: nil}, nil
@@ -159,7 +161,7 @@ func (val *Value) GoTypeName() string { return val.typ }
 // GoValue returns the underlying Go value.
 func (val *Value) GoValue() any { return val.val }
 
-// Map returns map representation of the [Value].
+// Map returns the map representation of the [Value].
 func (val *Value) Map() map[string]any {
 	return map[string]any{"type": val.typ, "value": val.val}
 }
@@ -214,7 +216,8 @@ func (val *Value) UnmarshalJSON(data []byte) error {
 	return Unmarshal(registry, data, val)
 }
 
-// Unmarshal unmarshals JSON representation of the value using [Registry].
+// Unmarshal unmarshals the JSON representation of the value using the
+// [Registry].
 // Transparent types (string, bool, nil, float64) are detected by their JSON
 // shape and require no envelope. The envelope form is still accepted for all
 // types (back-compatibility). Whitespace around the JSON value is ignored.
@@ -337,8 +340,8 @@ func FromMap(m map[string]any, opts ...Option) (val *Value, err error) {
 }
 
 // AsValue converts a map in the format returned by [Value.Map] into a [Value].
-// If v is already a *Value, it returns that value directly. Returns error if
-// conversion is not possible. The options are passed to [FromMap].
+// If v is already a *Value, it returns that value directly. Returns an error
+// if conversion is not possible. The options are passed to [FromMap].
 func AsValue(v any, opts ...Option) (*Value, error) {
 	if val, ok := v.(*Value); ok {
 		return val, nil
