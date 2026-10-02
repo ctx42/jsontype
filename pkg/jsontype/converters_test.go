@@ -43,6 +43,7 @@ func Test_numberConverter(t *testing.T) {
 	t.Run("json.Number", func(t *testing.T) {
 		// --- Given ---
 		cnv := numberConverter(convert.StringToUint64, convert.Float64ToUint64)
+
 		num := json.Number("18446744073709551615")
 
 		// --- When ---
@@ -56,6 +57,7 @@ func Test_numberConverter(t *testing.T) {
 	t.Run("float64", func(t *testing.T) {
 		// --- Given ---
 		cnv := numberConverter(convert.StringToUint64, convert.Float64ToUint64)
+
 		f64 := 42.0
 
 		// --- When ---
@@ -69,6 +71,7 @@ func Test_numberConverter(t *testing.T) {
 	t.Run("error - json.Number out of range", func(t *testing.T) {
 		// --- Given ---
 		cnv := numberConverter(convert.StringToUint8, convert.Float64ToUint8)
+
 		num := json.Number("256")
 
 		// --- When ---
@@ -83,7 +86,9 @@ func Test_numberConverter(t *testing.T) {
 	t.Run("error - json.Number other error", func(t *testing.T) {
 		// --- Given ---
 		str := func(string) (int, error) { return 0, errors.New("my error") }
+
 		cnv := numberConverter(str, convert.Float64ToInt)
+
 		num := json.Number("42")
 
 		// --- When ---
@@ -97,6 +102,7 @@ func Test_numberConverter(t *testing.T) {
 	t.Run("error - invalid type", func(t *testing.T) {
 		// --- Given ---
 		cnv := numberConverter(convert.StringToUint8, convert.Float64ToUint8)
+
 		str := "42"
 
 		// --- When ---
@@ -112,6 +118,7 @@ func Test_durationConverter(t *testing.T) {
 	t.Run("string", func(t *testing.T) {
 		// --- Given ---
 		cnv := durationConverter()
+
 		str := "1m30s"
 
 		// --- When ---
@@ -125,6 +132,7 @@ func Test_durationConverter(t *testing.T) {
 	t.Run("json.Number", func(t *testing.T) {
 		// --- Given ---
 		cnv := durationConverter()
+
 		num := json.Number("9223372036854775807")
 
 		// --- When ---
@@ -138,6 +146,7 @@ func Test_durationConverter(t *testing.T) {
 	t.Run("float64", func(t *testing.T) {
 		// --- Given ---
 		cnv := durationConverter()
+
 		f64 := 60e9
 
 		// --- When ---
@@ -151,6 +160,7 @@ func Test_durationConverter(t *testing.T) {
 	t.Run("error - invalid string", func(t *testing.T) {
 		// --- Given ---
 		cnv := durationConverter()
+
 		str := "abc"
 
 		// --- When ---
@@ -164,6 +174,7 @@ func Test_durationConverter(t *testing.T) {
 	t.Run("error - json.Number fraction", func(t *testing.T) {
 		// --- Given ---
 		cnv := durationConverter()
+
 		num := json.Number("1.5")
 
 		// --- When ---
