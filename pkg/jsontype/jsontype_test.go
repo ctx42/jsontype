@@ -664,8 +664,7 @@ func Test_Value_MarshalJSON(t *testing.T) {
 		have, err := val.MarshalJSON()
 
 		// --- Then ---
-		want := "jsontype: json: unsupported type: func()"
-		assert.ErrorEqual(t, want, err)
+		assert.ErrorEqual(t, "jsontype: json: unsupported type: func()", err)
 		assert.Nil(t, have)
 	})
 
