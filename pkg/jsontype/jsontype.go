@@ -131,9 +131,18 @@ type Value struct {
 }
 
 // New returns a new instance of [Value] for the given value. The type name is
-// set to the name returned from `reflect.TypeFor[T]().String()`.
+// set to the name returned from `reflect.TypeFor[T]().String()`. When T is an
+// interface type, the name of the value's dynamic type is used instead, or
+// [Nil] when the interface is nil.
 func New[T any](value T) *Value {
-	return &Value{typ: reflect.TypeFor[T]().String(), val: value}
+	typ := reflect.TypeFor[T]()
+	if typ.Kind() != reflect.Interface {
+		return &Value{typ: typ.String(), val: value}
+	}
+	if any(value) == nil {
+		return &Value{typ: Nil, val: nil}
+	}
+	return &Value{typ: reflect.TypeOf(value).String(), val: value}
 }
 
 // NewValue works like [New], but it supports untyped nil as the value and

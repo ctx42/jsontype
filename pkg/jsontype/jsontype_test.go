@@ -316,6 +316,42 @@ func Test_New(t *testing.T) {
 		assert.Equal(t, v, have.val)
 	})
 
+	t.Run("interface holding a value", func(t *testing.T) {
+		// --- Given ---
+		var v any = 42
+
+		// --- When ---
+		have := New(v)
+
+		// --- Then ---
+		assert.Equal(t, Int, have.typ)
+		assert.Equal(t, 42, have.val)
+	})
+
+	t.Run("nil interface", func(t *testing.T) {
+		// --- Given ---
+		var v error
+
+		// --- When ---
+		have := New(v)
+
+		// --- Then ---
+		assert.Equal(t, Nil, have.typ)
+		assert.Nil(t, have.val)
+	})
+
+	t.Run("interface holding a nil pointer", func(t *testing.T) {
+		// --- Given ---
+		var v any = (*int)(nil)
+
+		// --- When ---
+		have := New(v)
+
+		// --- Then ---
+		assert.Equal(t, "*int", have.typ)
+		assert.Equal(t, (*int)(nil), have.val)
+	})
+
 	t.Run("type from a standard library", func(t *testing.T) {
 		// --- Given ---
 		v := test.Type{}
