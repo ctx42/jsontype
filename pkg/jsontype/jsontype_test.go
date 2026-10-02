@@ -1307,8 +1307,8 @@ func Test_Unmarshal(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvValue, err)
-		wMsg := "jsontype: invalid value: from string to time.Time"
-		assert.ErrorEqual(t, wMsg, err)
+		want := "jsontype: invalid value: from string to time.Time"
+		assert.ErrorEqual(t, want, err)
 	})
 }
 
@@ -1413,8 +1413,8 @@ func Test_FromMap(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvFormat, err)
-		wMsg := "jsontype: missing value field: invalid format"
-		assert.ErrorEqual(t, wMsg, err)
+		want := "jsontype: missing value field: invalid format"
+		assert.ErrorEqual(t, want, err)
 		assert.Nil(t, have)
 	})
 
@@ -1427,8 +1427,8 @@ func Test_FromMap(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrUnsType, err)
-		wMsg := "jsontype: unsupported type: jsontype.Value"
-		assert.ErrorEqual(t, wMsg, err)
+		want := "jsontype: unsupported type: jsontype.Value"
+		assert.ErrorEqual(t, want, err)
 		assert.Nil(t, have)
 	})
 
@@ -1441,8 +1441,8 @@ func Test_FromMap(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvFormat, err)
-		wMsg := "jsontype: missing type field: invalid format"
-		assert.ErrorEqual(t, wMsg, err)
+		want := "jsontype: missing type field: invalid format"
+		assert.ErrorEqual(t, want, err)
 		assert.Nil(t, have)
 	})
 
@@ -1479,8 +1479,8 @@ func Test_FromMap(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvFormat, err)
-		wMsg := "jsontype: missing value field: invalid format"
-		assert.ErrorEqual(t, wMsg, err)
+		want := "jsontype: missing value field: invalid format"
+		assert.ErrorEqual(t, want, err)
 		assert.Nil(t, have)
 	})
 }

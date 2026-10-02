@@ -33,8 +33,8 @@ func Test_NilConverter(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvType, err)
-		wMsg := "jsontype: requires a nil value: invalid type"
-		assert.ErrorEqual(t, wMsg, err)
+		want := "jsontype: requires a nil value: invalid type"
+		assert.ErrorEqual(t, want, err)
 		assert.Nil(t, have)
 	})
 }
