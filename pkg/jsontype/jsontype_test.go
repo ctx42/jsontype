@@ -26,8 +26,8 @@ func Test_Register(t *testing.T) {
 	t.Run("new converter", func(t *testing.T) {
 		// --- Given ---
 		isolateRegistry(t)
-		cnv := func(any) (any, error) { return nil, nil }
 		name := t.Name()
+		cnv := func(any) (any, error) { return nil, nil }
 
 		// --- When ---
 		have := Register(name, cnv)
@@ -40,10 +40,10 @@ func Test_Register(t *testing.T) {
 	t.Run("overwrite existing converter", func(t *testing.T) {
 		// --- Given ---
 		isolateRegistry(t)
-		cnv0 := func(any) (any, error) { return nil, nil }
-		cnv1 := func(any) (any, error) { return nil, nil }
 		name := t.Name()
+		cnv0 := func(any) (any, error) { return nil, nil }
 		Register(name, cnv0)
+		cnv1 := func(any) (any, error) { return nil, nil }
 
 		// --- When ---
 		have := Register(name, cnv1)
@@ -55,8 +55,8 @@ func Test_Register(t *testing.T) {
 	t.Run("nil converter is nop", func(t *testing.T) {
 		// --- Given ---
 		isolateRegistry(t)
-		cnv := func(any) (any, error) { return nil, nil }
 		name := t.Name()
+		cnv := func(any) (any, error) { return nil, nil }
 		Register(name, cnv)
 
 		// --- When ---
