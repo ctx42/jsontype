@@ -1589,6 +1589,7 @@ func Test_unmarshalEnvelope(t *testing.T) {
 		assert.ErrorIs(t, convert.ErrUnsType, err)
 		assert.ErrorEqual(t, "jsontype: unsupported type: unknown", err)
 	})
+
 	t.Run("error - value unchanged on conversion error", func(t *testing.T) {
 		// --- Given ---
 		reg := DefaultRegistry()
