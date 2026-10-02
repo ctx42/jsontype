@@ -23,6 +23,7 @@ func isolateRegistry(t tester.T) {
 func Test_isolateRegistry(t *testing.T) {
 	// --- Given ---
 	org := registry
+
 	tspy := tester.New(t, 1).ExpectCleanups(1).Close()
 
 	// --- When ---
