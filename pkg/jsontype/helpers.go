@@ -36,19 +36,22 @@ func Unmarshal(reg *Registry, data []byte, val *Value) error {
 		return nil
 	case 't':
 		if string(data) != "true" {
-			return fmt.Errorf("jsontype: invalid JSON token")
+			format := "jsontype: invalid JSON token: %w"
+			return fmt.Errorf(format, convert.ErrInvFormat)
 		}
 		val.typ, val.val = Bool, true
 		return nil
 	case 'f':
 		if string(data) != "false" {
-			return fmt.Errorf("jsontype: invalid JSON token")
+			format := "jsontype: invalid JSON token: %w"
+			return fmt.Errorf(format, convert.ErrInvFormat)
 		}
 		val.typ, val.val = Bool, false
 		return nil
 	case 'n':
 		if string(data) != "null" {
-			return fmt.Errorf("jsontype: invalid JSON token")
+			format := "jsontype: invalid JSON token: %w"
+			return fmt.Errorf(format, convert.ErrInvFormat)
 		}
 		val.typ, val.val = Nil, nil
 		return nil

@@ -332,7 +332,9 @@ func Test_Unmarshal(t *testing.T) {
 		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
-		assert.ErrorEqual(t, "jsontype: invalid JSON token", err)
+		assert.ErrorIs(t, convert.ErrInvFormat, err)
+		want := "jsontype: invalid JSON token: invalid format"
+		assert.ErrorEqual(t, want, err)
 	})
 
 	t.Run("error - malformed bool false token", func(t *testing.T) {
@@ -345,7 +347,9 @@ func Test_Unmarshal(t *testing.T) {
 		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
-		assert.ErrorEqual(t, "jsontype: invalid JSON token", err)
+		assert.ErrorIs(t, convert.ErrInvFormat, err)
+		want := "jsontype: invalid JSON token: invalid format"
+		assert.ErrorEqual(t, want, err)
 	})
 
 	t.Run("error - malformed null token", func(t *testing.T) {
@@ -358,7 +362,9 @@ func Test_Unmarshal(t *testing.T) {
 		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
-		assert.ErrorEqual(t, "jsontype: invalid JSON token", err)
+		assert.ErrorIs(t, convert.ErrInvFormat, err)
+		want := "jsontype: invalid JSON token: invalid format"
+		assert.ErrorEqual(t, want, err)
 	})
 
 	t.Run("error - invalid number", func(t *testing.T) {
