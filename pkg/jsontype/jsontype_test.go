@@ -633,6 +633,59 @@ func Test_Value_MarshalJSON(t *testing.T) {
 	})
 }
 
+func Test_Value_MarshalJSON_roundtrip_tabular(t *testing.T) {
+	tim := time.Date(2000, 1, 2, 3, 4, 5, 600000000, time.UTC)
+
+	tt := []struct {
+		testN string
+
+		val *Value
+	}{
+		{"int max", New(math.MaxInt)},
+		{"int min", New(math.MinInt)},
+		{"int8 min", New(int8(math.MinInt8))},
+		{"int16 max", New(int16(math.MaxInt16))},
+		{"int32 min", New(int32(math.MinInt32))},
+		{"int64 max", New(int64(math.MaxInt64))},
+		{"int64 min", New(int64(math.MinInt64))},
+		{"int64 above 2^53", New(int64(9007199254740993))},
+		{"uint max", New(uint(math.MaxUint))},
+		{"uint8 max", New(uint8(math.MaxUint8))},
+		{"uint16 max", New(uint16(math.MaxUint16))},
+		{"uint32 max", New(uint32(math.MaxUint32))},
+		{"uint64 max", New(uint64(math.MaxUint64))},
+		{"float32 fraction", New(float32(0.1))},
+		{"float32 max", New(float32(math.MaxFloat32))},
+		{"float32 smallest", New(float32(math.SmallestNonzeroFloat32))},
+		{"float64 fraction", New(0.1)},
+		{"float64 max", New(math.MaxFloat64)},
+		{"byte", New(byte(42))},
+		{"rune", New('A')},
+		{"string", New("abc")},
+		{"bool", New(true)},
+		{"nil", &Value{typ: Nil}},
+		{"time.Time", New(tim)},
+		{"time.Duration", New(time.Minute)},
+		{"time.Duration max", New(time.Duration(math.MaxInt64))},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- Given ---
+			data := must.Value(json.Marshal(tc.val))
+			have := &Value{}
+
+			// --- When ---
+			err := json.Unmarshal(data, have)
+
+			// --- Then ---
+			assert.NoError(t, err)
+			assert.Equal(t, tc.val.typ, have.typ)
+			assert.Equal(t, tc.val.val, have.val)
+		})
+	}
+}
+
 func Test_Value_UnmarshalJSON(t *testing.T) {
 	t.Run("success envelope", func(t *testing.T) {
 		// --- Given ---
