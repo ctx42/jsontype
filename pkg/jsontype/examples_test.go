@@ -95,3 +95,45 @@ func ExampleFromMap() {
 	fmt.Printf("%v (%T)\n", val.GoValue(), val.GoValue())
 	// Output: 42 (uint)
 }
+
+func ExampleUnmarshal() {
+	// Register converters in a custom registry instead of the package-level
+	// one used by json.Unmarshal.
+	reg := jsontype.NewRegistry()
+	cnv := func(value float64) (time.Duration, error) {
+		return time.Duration(value) * time.Second, nil
+	}
+	reg.Register("seconds", convert.ToAnyAny(cnv))
+
+	data := []byte(`{"type": "seconds", "value": 42}`)
+	val := &jsontype.Value{}
+	if err := jsontype.Unmarshal(reg, data, val); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("%[1]v (%[1]T)\n", val.GoValue())
+	// Output: 42s (time.Duration)
+}
+
+func ExampleNewValue() {
+	val, err := jsontype.NewValue(int8(42))
+	fmt.Println(val.GoTypeName(), err)
+
+	_, err = jsontype.NewValue(struct{}{})
+	fmt.Println(err)
+	// Output:
+	// int8 <nil>
+	// jsontype: unsupported type: struct {}
+}
+
+func ExampleAsValue() {
+	m := jsontype.New(uint16(42)).Map()
+
+	val, err := jsontype.AsValue(m)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("%v (%s)\n", val.GoValue(), val.GoTypeName())
+	// Output: 42 (uint16)
+}
