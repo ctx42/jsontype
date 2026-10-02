@@ -1471,6 +1471,81 @@ func Test_FromMap(t *testing.T) {
 		assert.Equal(t, uint(42), have.val)
 	})
 
+	t.Run("byte alias", func(t *testing.T) {
+		// --- Given ---
+		m := map[string]any{"type": "byte", "value": uint8(42)}
+
+		// --- When ---
+		have, err := FromMap(m)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Byte, have.typ)
+		assert.Equal(t, uint8(42), have.val)
+	})
+
+	t.Run("rune alias", func(t *testing.T) {
+		// --- Given ---
+		m := map[string]any{"type": "rune", "value": int32(42)}
+
+		// --- When ---
+		have, err := FromMap(m)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Rune, have.typ)
+		assert.Equal(t, int32(42), have.val)
+	})
+
+	t.Run("custom type name", func(t *testing.T) {
+		// --- Given ---
+		cnv := func(value any) (any, error) { return value, nil }
+		reg := NewRegistry()
+		reg.Register("seconds", cnv)
+
+		m := map[string]any{"type": "seconds", "value": time.Minute}
+
+		opt := WithRegistry(reg)
+
+		// --- When ---
+		have, err := FromMap(m, opt)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, "seconds", have.typ)
+		assert.Equal(t, time.Minute, have.val)
+	})
+
+	t.Run("nil value without nil converter", func(t *testing.T) {
+		// --- Given ---
+		m := map[string]any{"type": "nil", "value": nil}
+
+		opt := WithRegistry(NewRegistry())
+
+		// --- When ---
+		have, err := FromMap(m, opt)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Nil, have.typ)
+		assert.Nil(t, have.val)
+	})
+
+	t.Run("round trip of unmarshalled byte", func(t *testing.T) {
+		// --- Given ---
+		val := &Value{}
+		must.Nil(json.Unmarshal([]byte(`{"type":"byte","value":65}`), val))
+
+		m := val.Map()
+
+		// --- When ---
+		have, err := FromMap(m)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, val, have)
+	})
+
 	t.Run("error - missing value key", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{"type": "uint"}
@@ -1485,7 +1560,35 @@ func Test_FromMap(t *testing.T) {
 		assert.Nil(t, have)
 	})
 
-	t.Run("error - unsupported value key type", func(t *testing.T) {
+	t.Run("error - unsupported type", func(t *testing.T) {
+		// --- Given ---
+		m := map[string]any{"type": "unknown", "value": uint(42)}
+
+		// --- When ---
+		have, err := FromMap(m)
+
+		// --- Then ---
+		assert.ErrorIs(t, convert.ErrUnsType, err)
+		assert.ErrorEqual(t, "jsontype: unsupported type: unknown", err)
+		assert.Nil(t, have)
+	})
+
+	t.Run("error - nil registry", func(t *testing.T) {
+		// --- Given ---
+		m := map[string]any{"type": "nil", "value": nil}
+
+		opt := WithRegistry(nil)
+
+		// --- When ---
+		have, err := FromMap(m, opt)
+
+		// --- Then ---
+		assert.ErrorIs(t, convert.ErrNilRegistry, err)
+		assert.ErrorEqual(t, "jsontype: nil registry", err)
+		assert.Nil(t, have)
+	})
+
+	t.Run("error - value not of built-in type", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{"type": "uint", "value": Value{}}
 
@@ -1493,8 +1596,38 @@ func Test_FromMap(t *testing.T) {
 		have, err := FromMap(m)
 
 		// --- Then ---
-		assert.ErrorIs(t, convert.ErrUnsType, err)
-		want := "jsontype: unsupported type: jsontype.Value"
+		assert.ErrorIs(t, convert.ErrInvValue, err)
+		want := "" +
+			"jsontype: types do not match: uint != jsontype.Value: " +
+			"invalid value"
+		assert.ErrorEqual(t, want, err)
+		assert.Nil(t, have)
+	})
+
+	t.Run("error - nil value of built-in type", func(t *testing.T) {
+		// --- Given ---
+		m := map[string]any{"type": "int", "value": nil}
+
+		// --- When ---
+		have, err := FromMap(m)
+
+		// --- Then ---
+		assert.ErrorIs(t, convert.ErrInvValue, err)
+		want := "jsontype: types do not match: int != nil: invalid value"
+		assert.ErrorEqual(t, want, err)
+		assert.Nil(t, have)
+	})
+
+	t.Run("error - missing type key checked before value", func(t *testing.T) {
+		// --- Given ---
+		m := map[string]any{"value": struct{}{}}
+
+		// --- When ---
+		have, err := FromMap(m)
+
+		// --- Then ---
+		assert.ErrorIs(t, convert.ErrInvFormat, err)
+		want := "jsontype: missing type field: invalid format"
 		assert.ErrorEqual(t, want, err)
 		assert.Nil(t, have)
 	})
@@ -1550,6 +1683,48 @@ func Test_FromMap(t *testing.T) {
 		assert.ErrorEqual(t, want, err)
 		assert.Nil(t, have)
 	})
+}
+
+func Test_builtinGoName_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		typ  string
+		want string
+		ok   bool
+	}{
+		{"int", Int, Int, true},
+		{"int8", Int8, Int8, true},
+		{"int16", Int16, Int16, true},
+		{"int32", Int32, Int32, true},
+		{"int64", Int64, Int64, true},
+		{"uint", Uint, Uint, true},
+		{"uint8", Uint8, Uint8, true},
+		{"uint16", Uint16, Uint16, true},
+		{"uint32", Uint32, Uint32, true},
+		{"uint64", Uint64, Uint64, true},
+		{"float32", Float32, Float32, true},
+		{"float64", Float64, Float64, true},
+		{"byte", Byte, Uint8, true},
+		{"rune", Rune, Int32, true},
+		{"string", String, String, true},
+		{"bool", Bool, Bool, true},
+		{"time.Time", Time, Time, true},
+		{"time.Duration", Duration, Duration, true},
+		{"nil", Nil, Nil, true},
+		{"custom", "seconds", "", false},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, ok := builtinGoName(tc.typ)
+
+			// --- Then ---
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.ok, ok)
+		})
+	}
 }
 
 func Test_AsValue(t *testing.T) {

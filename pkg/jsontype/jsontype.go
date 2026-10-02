@@ -144,15 +144,12 @@ func NewValue(val any, opts ...Option) (*Value, error) {
 	if val == nil {
 		return &Value{typ: Nil, val: nil}, nil
 	}
-	def := &Options{reg: registry}
-	for _, opt := range opts {
-		opt(def)
-	}
-	if def.reg == nil {
+	ops := newOptions(opts...)
+	if ops.reg == nil {
 		return nil, fmt.Errorf("jsontype: %w", convert.ErrNilRegistry)
 	}
 	typ := reflect.TypeOf(val).String()
-	if def.reg.Converter(typ) == nil {
+	if ops.reg.Converter(typ) == nil {
 		return nil, fmt.Errorf("jsontype: %w: %s", convert.ErrUnsType, typ)
 	}
 	return &Value{typ: typ, val: val}, nil
@@ -311,35 +308,64 @@ func unmarshalEnvelope(reg *Registry, data []byte, val *Value) error {
 
 // FromMap constructs an instance of [Value] from its map representation. It
 // expects the map to have the same structure as the one returned from the
-// [Value.Map] method. The options are passed to [NewValue].
-func FromMap(m map[string]any, opts ...Option) (val *Value, err error) {
-	var v any
-	var ok bool
-
-	if v, ok = keyValue("value", m); !ok {
+// [Value.Map] method. The type name must have a converter in the registry
+// set with [WithRegistry], except for [Nil]. A built-in type name must also
+// match the Go type of the value, where [Byte] and [Rune] match uint8 and
+// int32. A custom type name is trusted, as its converter decodes JSON, not
+// Go values.
+func FromMap(m map[string]any, opts ...Option) (*Value, error) {
+	v, ok := keyValue("value", m)
+	if !ok {
 		format := "jsontype: missing value field: %w"
 		return nil, fmt.Errorf(format, convert.ErrInvFormat)
 	}
-	if val, err = NewValue(v, opts...); err != nil {
-		return nil, err
-	}
-
-	if v, ok = keyValue("type", m); !ok {
+	field, ok := keyValue("type", m)
+	if !ok {
 		format := "jsontype: missing type field: %w"
 		return nil, fmt.Errorf(format, convert.ErrInvFormat)
 	}
-
-	var typ string
-	if typ, ok = v.(string); !ok {
+	typ, ok := field.(string)
+	if !ok {
 		format := "jsontype: type field: %w"
 		return nil, fmt.Errorf(format, convert.ErrInvFormat)
 	}
 
-	if typ != val.typ {
-		format := "jsontype: types do not match: %s != %s: %w"
-		return nil, fmt.Errorf(format, typ, val.typ, convert.ErrInvValue)
+	ops := newOptions(opts...)
+	if ops.reg == nil {
+		return nil, fmt.Errorf("jsontype: %w", convert.ErrNilRegistry)
 	}
-	return val, nil
+	if typ != Nil && ops.reg.Converter(typ) == nil {
+		return nil, fmt.Errorf("jsontype: %w: %s", convert.ErrUnsType, typ)
+	}
+
+	if goName, ok := builtinGoName(typ); ok {
+		valName := Nil
+		if v != nil {
+			valName = reflect.TypeOf(v).String()
+		}
+		if valName != goName {
+			format := "jsontype: types do not match: %s != %s: %w"
+			return nil, fmt.Errorf(format, typ, valName, convert.ErrInvValue)
+		}
+	}
+	return &Value{typ: typ, val: v}, nil
+}
+
+// builtinGoName returns the Go type name of the values held under the
+// built-in type name and reports whether the name is a built-in one.
+func builtinGoName(typ string) (string, bool) {
+	switch typ {
+	case Byte:
+		return Uint8, true
+
+	case Rune:
+		return Int32, true
+
+	case Int, Int8, Int16, Int32, Int64, Uint, Uint8, Uint16, Uint32, Uint64,
+		Float32, Float64, String, Bool, Time, Duration, Nil:
+		return typ, true
+	}
+	return "", false
 }
 
 // AsValue converts a map in the format returned by [Value.Map] into a [Value].
