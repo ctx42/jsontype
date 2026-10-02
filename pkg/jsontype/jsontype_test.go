@@ -4,6 +4,7 @@
 package jsontype
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -447,6 +448,18 @@ func Test_Value_MarshalJSON(t *testing.T) {
 		assert.Equal(t, "4.2", string(have))
 	})
 
+	t.Run("success not addressable value", func(t *testing.T) {
+		// --- Given ---
+		m := map[string]Value{"k": {typ: Uint8, val: uint8(5)}}
+
+		// --- When ---
+		have, err := json.Marshal(m)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.JSON(t, `{"k": {"type": "uint8", "value": 5}}`, string(have))
+	})
+
 	t.Run("error - empty type", func(t *testing.T) {
 		// --- Given ---
 		val := &Value{typ: "", val: nil}
@@ -459,16 +472,16 @@ func Test_Value_MarshalJSON(t *testing.T) {
 		assert.Nil(t, have)
 	})
 
-	t.Run("error - nil Value", func(t *testing.T) {
+	t.Run("nil pointer", func(t *testing.T) {
 		// --- Given ---
 		var val *Value
 
 		// --- When ---
-		have, err := val.MarshalJSON()
+		have, err := json.Marshal(val)
 
 		// --- Then ---
-		assert.ErrorIs(t, convert.ErrInvValue, err)
-		assert.Nil(t, have)
+		assert.NoError(t, err)
+		assert.Equal(t, "null", string(have))
 	})
 
 	t.Run("error - string type mismatch", func(t *testing.T) {

@@ -164,9 +164,11 @@ func (val *Value) Map() map[string]any {
 
 // MarshalJSON implements [json.Marshaler]. Transparent types (string,
 // bool, nil, float64) are emitted as bare JSON primitives; all other
-// types use the {"type": "...", "value": ...} envelope.
-func (val *Value) MarshalJSON() ([]byte, error) {
-	if val == nil || val.typ == "" {
+// types use the {"type": "...", "value": ...} envelope. It has a value
+// receiver, so a [Value] is encoded the same way whether or not
+// [json.Marshal] can take its address (e.g. a map value).
+func (val Value) MarshalJSON() ([]byte, error) {
+	if val.typ == "" {
 		return nil, convert.ErrInvValue
 	}
 	switch val.typ {
