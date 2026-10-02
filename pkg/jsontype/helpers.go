@@ -21,9 +21,6 @@ func marshal(v any) ([]byte, error) {
 // the value and true if it exists. Returns nil and false if it doesn't or when
 // the map is empty or nil.
 func keyValue(key string, m map[string]any) (any, bool) {
-	if len(m) == 0 {
-		return nil, false
-	}
 	val, ok := m[key]
 	return val, ok
 }
