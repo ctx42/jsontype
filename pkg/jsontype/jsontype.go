@@ -193,6 +193,7 @@ func (val Value) MarshalJSON() ([]byte, error) {
 			return nil, fmt.Errorf(format, val.typ, convert.ErrInvValue)
 		}
 		return json.Marshal(s)
+
 	case Bool:
 		b, ok := val.val.(bool)
 		if !ok {
@@ -203,12 +204,14 @@ func (val Value) MarshalJSON() ([]byte, error) {
 			return []byte("true"), nil
 		}
 		return []byte("false"), nil
+
 	case Nil:
 		if val.val != nil {
 			format := "jsontype: %s: %w"
 			return nil, fmt.Errorf(format, val.typ, convert.ErrInvValue)
 		}
 		return []byte("null"), nil
+
 	case Float64:
 		f, ok := val.val.(float64)
 		if !ok {
@@ -250,6 +253,7 @@ func Unmarshal(reg *Registry, data []byte, val *Value) error {
 		}
 		val.typ, val.val = String, s
 		return nil
+
 	case 't':
 		if string(data) != "true" {
 			format := "jsontype: invalid JSON token: %w"
@@ -257,6 +261,7 @@ func Unmarshal(reg *Registry, data []byte, val *Value) error {
 		}
 		val.typ, val.val = Bool, true
 		return nil
+
 	case 'f':
 		if string(data) != "false" {
 			format := "jsontype: invalid JSON token: %w"
@@ -264,6 +269,7 @@ func Unmarshal(reg *Registry, data []byte, val *Value) error {
 		}
 		val.typ, val.val = Bool, false
 		return nil
+
 	case 'n':
 		if string(data) != "null" {
 			format := "jsontype: invalid JSON token: %w"
@@ -271,6 +277,7 @@ func Unmarshal(reg *Registry, data []byte, val *Value) error {
 		}
 		val.typ, val.val = Nil, nil
 		return nil
+
 	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-':
 		var f float64
 		if err := json.Unmarshal(data, &f); err != nil {
