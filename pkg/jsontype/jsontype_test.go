@@ -18,8 +18,12 @@ import (
 )
 
 func Test_registry(t *testing.T) {
-	assert.NotNil(t, registry)
-	assert.Len(t, 19, registry.reg)
+	// --- When ---
+	have := registry
+
+	// --- Then ---
+	assert.NotNil(t, have)
+	assert.Len(t, 19, have.reg)
 }
 
 func Test_Register(t *testing.T) {
