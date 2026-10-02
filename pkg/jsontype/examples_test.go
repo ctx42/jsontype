@@ -65,16 +65,18 @@ func ExampleRegister_custom() {
 		return time.Duration(value) * time.Second, nil
 	}
 
-	// Register converter.
+	// Register the converter in the package-level registry. It stays
+	// registered for the rest of the program and applies to every
+	// json.Unmarshal of a Value.
 	jsontype.Register("seconds", convert.ToAnyAny(cnv))
 
 	// Custom type named "seconds" representing duration in seconds.
 	data := []byte(`{"type": "seconds", "value": 42}`)
 
 	gType := &jsontype.Value{}
-	err := json.Unmarshal(data, gType)
-
-	_ = err // Check error.
+	if err := json.Unmarshal(data, gType); err != nil {
+		log.Fatal(err)
+	}
 
 	fmt.Printf("unmarshalled: %[1]v (%[1]T)\n", gType.GoValue())
 	// Output:
