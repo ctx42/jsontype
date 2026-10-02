@@ -24,7 +24,9 @@ func Register(typ string, cnv convert.AnyToAny) convert.AnyToAny {
 	return registry.Register(typ, cnv)
 }
 
-// List of type names supported by the package out of the box.
+// List of type names supported by the package out of the box. [Byte] and
+// [Rune] are accepted when unmarshalling, but [New] and [NewValue] never
+// produce them, as Go reports byte and rune as uint8 and int32.
 const (
 	Int   = "int"
 	Int16 = "int16"
