@@ -76,8 +76,7 @@ func Test_numberConverter(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvRange, err)
-		want := "value out of range: from float64 to uint8"
-		assert.ErrorEqual(t, want, err)
+		assert.ErrorEqual(t, "value out of range: from float64 to uint8", err)
 		assert.Equal(t, uint8(0), have)
 	})
 
