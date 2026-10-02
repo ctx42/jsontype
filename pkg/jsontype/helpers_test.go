@@ -39,6 +39,7 @@ func Test_keyValue(t *testing.T) {
 	t.Run("key exists", func(t *testing.T) {
 		// --- Given ---
 		key := "B"
+
 		m := map[string]any{"A": 1, "B": 2}
 
 		// --- When ---
