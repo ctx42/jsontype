@@ -17,12 +17,10 @@ import (
 // registry is the package-level [Registry].
 var registry = DefaultRegistry()
 
-// Register registers a converter for the given type name. Returns the
-// previous converter if one was already registered, nil otherwise.
+// Register registers a converter for the given type name in the
+// package-level registry, used by [Value.UnmarshalJSON], [NewValue], and
+// [FromMap] by default. See [Registry.Register].
 func Register(typ string, cnv convert.AnyToAny) convert.AnyToAny {
-	if cnv == nil {
-		return nil
-	}
 	return registry.Register(typ, cnv)
 }
 
