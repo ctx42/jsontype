@@ -269,6 +269,46 @@ func Test_Unmarshal(t *testing.T) {
 		assert.ErrorEqual(t, want, err)
 	})
 
+	t.Run("success bare value with nil registry", func(t *testing.T) {
+		// --- Given ---
+		data := []byte(`"abc"`)
+		val := &Value{}
+
+		// --- When ---
+		err := Unmarshal(nil, data, val)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, String, val.typ)
+		assert.Equal(t, "abc", val.val)
+	})
+
+	t.Run("error - nil registry", func(t *testing.T) {
+		// --- Given ---
+		data := []byte(`{"type": "uint8", "value": 42}`)
+		val := &Value{}
+
+		// --- When ---
+		err := Unmarshal(nil, data, val)
+
+		// --- Then ---
+		assert.ErrorIs(t, convert.ErrNilRegistry, err)
+		assert.ErrorEqual(t, "jsontype: nil registry", err)
+	})
+
+	t.Run("error - nil value", func(t *testing.T) {
+		// --- Given ---
+		reg := NewRegistry()
+		data := []byte(`"abc"`)
+
+		// --- When ---
+		err := Unmarshal(reg, data, nil)
+
+		// --- Then ---
+		assert.ErrorIs(t, convert.ErrInvValue, err)
+		assert.ErrorEqual(t, "jsontype: nil Value: invalid value", err)
+	})
+
 	t.Run("error - invalid bare string", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()

@@ -135,7 +135,7 @@ func New[T any](value T) *Value {
 
 // NewValue works like [New], but it supports untyped nil as the value and
 // checks if the type has a registered converter. Returns error when the type
-// has no registered converter.
+// has no registered converter or the registry set with [WithRegistry] is nil.
 func NewValue(val any, opts ...Option) (*Value, error) {
 	if val == nil {
 		return &Value{typ: Nil, val: nil}, nil
@@ -143,6 +143,9 @@ func NewValue(val any, opts ...Option) (*Value, error) {
 	def := &Options{reg: registry}
 	for _, opt := range opts {
 		opt(def)
+	}
+	if def.reg == nil {
+		return nil, fmt.Errorf("jsontype: %w", convert.ErrNilRegistry)
 	}
 	typ := reflect.TypeOf(val).String()
 	if cnv := def.reg.Converter(typ); cnv == nil {
