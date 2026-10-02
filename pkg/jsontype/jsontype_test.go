@@ -1344,7 +1344,10 @@ func Test_Unmarshal(t *testing.T) {
 		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
-		assert.ErrorContain(t, "jsontype: invalid character", err)
+		want := "" +
+			"jsontype: invalid character '!' " +
+			"looking for beginning of object key string"
+		assert.ErrorEqual(t, want, err)
 	})
 
 	t.Run("error - unsupported type", func(t *testing.T) {
