@@ -365,6 +365,20 @@ func Test_unmarshalEnvelope(t *testing.T) {
 		assert.ErrorIs(t, convert.ErrUnsType, err)
 		assert.ErrorEqual(t, "jsontype: unsupported type: unknown", err)
 	})
+	t.Run("error - value unchanged on conversion error", func(t *testing.T) {
+		// --- Given ---
+		reg := DefaultRegistry()
+		data := []byte(`{"type": "uint8", "value": 99999}`)
+		val := &Value{typ: String, val: "abc"}
+
+		// --- When ---
+		err := unmarshalEnvelope(reg, data, val)
+
+		// --- Then ---
+		assert.ErrorIs(t, convert.ErrInvRange, err)
+		assert.Equal(t, String, val.typ)
+		assert.Equal(t, "abc", val.val)
+	})
 }
 
 func Test_keyValue(t *testing.T) {
