@@ -24,6 +24,7 @@ func Test_Registry_Register(t *testing.T) {
 	t.Run("register not registered", func(t *testing.T) {
 		// --- Given ---
 		cnv := func(value any) (any, error) { return value, nil }
+
 		reg := NewRegistry()
 
 		// --- When ---
@@ -31,6 +32,7 @@ func Test_Registry_Register(t *testing.T) {
 
 		// --- Then ---
 		assert.Nil(t, have)
+
 		val, _ := assert.HasKey(t, Int, reg.reg)
 		assert.Same(t, cnv, val)
 	})
@@ -38,7 +40,9 @@ func Test_Registry_Register(t *testing.T) {
 	t.Run("overwrite registered", func(t *testing.T) {
 		// --- Given ---
 		cnv0 := func(value any) (any, error) { return value, nil }
+
 		cnv1 := func(value any) (any, error) { return value, nil }
+
 		reg := NewRegistry()
 		reg.Register(Int, cnv0)
 
@@ -47,6 +51,7 @@ func Test_Registry_Register(t *testing.T) {
 
 		// --- Then ---
 		assert.Same(t, cnv0, have)
+
 		val, _ := assert.HasKey(t, Int, reg.reg)
 		assert.Same(t, cnv1, val)
 	})
@@ -54,7 +59,9 @@ func Test_Registry_Register(t *testing.T) {
 	t.Run("clears number flag", func(t *testing.T) {
 		// --- Given ---
 		cnv0 := func(value any) (any, error) { return value, nil }
+
 		cnv1 := func(value any) (any, error) { return value, nil }
+
 		reg := NewRegistry()
 		reg.registerNumber(Int, cnv0)
 
@@ -63,12 +70,14 @@ func Test_Registry_Register(t *testing.T) {
 
 		// --- Then ---
 		assert.Same(t, cnv0, have)
+
 		assert.Len(t, 0, reg.num)
 	})
 
 	t.Run("zero value registry", func(t *testing.T) {
 		// --- Given ---
 		cnv := func(value any) (any, error) { return value, nil }
+
 		var reg Registry
 
 		// --- When ---
@@ -76,6 +85,7 @@ func Test_Registry_Register(t *testing.T) {
 
 		// --- Then ---
 		assert.Nil(t, have)
+
 		assert.Same(t, cnv, reg.Converter(Int))
 	})
 
@@ -88,6 +98,7 @@ func Test_Registry_Register(t *testing.T) {
 
 		// --- Then ---
 		assert.Nil(t, have)
+
 		assert.Len(t, 0, reg.reg)
 	})
 }
@@ -96,6 +107,7 @@ func Test_Registry_registerNumber(t *testing.T) {
 	t.Run("register not registered", func(t *testing.T) {
 		// --- Given ---
 		cnv := func(value any) (any, error) { return value, nil }
+
 		reg := NewRegistry()
 
 		// --- When ---
@@ -103,6 +115,7 @@ func Test_Registry_registerNumber(t *testing.T) {
 
 		// --- Then ---
 		assert.Nil(t, have)
+
 		val, _ := assert.HasKey(t, Int, reg.reg)
 		assert.Same(t, cnv, val)
 		assert.True(t, reg.num[Int])
@@ -111,7 +124,9 @@ func Test_Registry_registerNumber(t *testing.T) {
 	t.Run("overwrite registered", func(t *testing.T) {
 		// --- Given ---
 		cnv0 := func(value any) (any, error) { return value, nil }
+
 		cnv1 := func(value any) (any, error) { return value, nil }
+
 		reg := NewRegistry()
 		reg.Register(Int, cnv0)
 
@@ -120,6 +135,7 @@ func Test_Registry_registerNumber(t *testing.T) {
 
 		// --- Then ---
 		assert.Same(t, cnv0, have)
+
 		val, _ := assert.HasKey(t, Int, reg.reg)
 		assert.Same(t, cnv1, val)
 		assert.True(t, reg.num[Int])
@@ -128,6 +144,7 @@ func Test_Registry_registerNumber(t *testing.T) {
 	t.Run("zero value registry", func(t *testing.T) {
 		// --- Given ---
 		cnv := func(value any) (any, error) { return value, nil }
+
 		var reg Registry
 
 		// --- When ---
@@ -135,6 +152,7 @@ func Test_Registry_registerNumber(t *testing.T) {
 
 		// --- Then ---
 		assert.Nil(t, have)
+
 		assert.Same(t, cnv, reg.Converter(Int))
 		assert.True(t, reg.num[Int])
 	})
@@ -144,6 +162,7 @@ func Test_Registry_Converter(t *testing.T) {
 	t.Run("registered", func(t *testing.T) {
 		// --- Given ---
 		cnv := func(value any) (any, error) { return value, nil }
+
 		reg := NewRegistry()
 		reg.Register(Int, cnv)
 
@@ -170,6 +189,7 @@ func Test_Registry_converter(t *testing.T) {
 	t.Run("number converter", func(t *testing.T) {
 		// --- Given ---
 		cnv := func(value any) (any, error) { return value, nil }
+
 		reg := NewRegistry()
 		reg.registerNumber(Int, cnv)
 
@@ -184,6 +204,7 @@ func Test_Registry_converter(t *testing.T) {
 	t.Run("regular converter", func(t *testing.T) {
 		// --- Given ---
 		cnv := func(value any) (any, error) { return value, nil }
+
 		reg := NewRegistry()
 		reg.Register(Int, cnv)
 
@@ -224,6 +245,7 @@ func Test_Registry_alloc(t *testing.T) {
 	t.Run("keeps existing maps", func(t *testing.T) {
 		// --- Given ---
 		cnv := func(value any) (any, error) { return value, nil }
+
 		reg := NewRegistry()
 		reg.registerNumber(Int, cnv)
 
