@@ -17,7 +17,7 @@ import (
 	"github.com/ctx42/jsontype/internal/test"
 )
 
-func Test_init(t *testing.T) {
+func Test_registry(t *testing.T) {
 	assert.NotNil(t, registry)
 	assert.Len(t, 19, registry.reg)
 }

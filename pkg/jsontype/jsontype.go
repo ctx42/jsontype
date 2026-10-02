@@ -14,7 +14,7 @@ import (
 )
 
 // registry is package level [Registry].
-var registry *Registry
+var registry = DefaultRegistry()
 
 // Register registers a converter for the given type name. Returns the
 // previous converter if one was already registered, nil otherwise.
@@ -24,8 +24,6 @@ func Register(typ string, cnv convert.AnyToAny) convert.AnyToAny {
 	}
 	return registry.Register(typ, cnv)
 }
-
-func init() { registry = DefaultRegistry() }
 
 // List of type names supported by the package out of the box.
 const (
