@@ -57,19 +57,55 @@ const (
 func DefaultRegistry() *Registry {
 	reg := NewRegistry()
 
-	reg.Register(Byte, convert.ToAnyAny(convert.Float64ToByte))
-	reg.Register(Uint8, convert.ToAnyAny(convert.Float64ToUint8))
-	reg.Register(Uint16, convert.ToAnyAny(convert.Float64ToUint16))
-	reg.Register(Uint32, convert.ToAnyAny(convert.Float64ToUint32))
-	reg.Register(Uint64, convert.ToAnyAny(convert.Float64ToUint64))
-	reg.Register(Uint, convert.ToAnyAny(convert.Float64ToUint))
+	reg.registerNumber(
+		Byte,
+		numberConverter(convert.StringToByte, convert.Float64ToByte),
+	)
+	reg.registerNumber(
+		Uint8,
+		numberConverter(convert.StringToUint8, convert.Float64ToUint8),
+	)
+	reg.registerNumber(
+		Uint16,
+		numberConverter(convert.StringToUint16, convert.Float64ToUint16),
+	)
+	reg.registerNumber(
+		Uint32,
+		numberConverter(convert.StringToUint32, convert.Float64ToUint32),
+	)
+	reg.registerNumber(
+		Uint64,
+		numberConverter(convert.StringToUint64, convert.Float64ToUint64),
+	)
+	reg.registerNumber(
+		Uint,
+		numberConverter(convert.StringToUint, convert.Float64ToUint),
+	)
 
-	reg.Register(Int8, convert.ToAnyAny(convert.Float64ToInt8))
-	reg.Register(Int16, convert.ToAnyAny(convert.Float64ToInt16))
-	reg.Register(Rune, convert.ToAnyAny(convert.Float64ToRune))
-	reg.Register(Int32, convert.ToAnyAny(convert.Float64ToInt32))
-	reg.Register(Int64, convert.ToAnyAny(convert.Float64ToInt64))
-	reg.Register(Int, convert.ToAnyAny(convert.Float64ToInt))
+	reg.registerNumber(
+		Int8,
+		numberConverter(convert.StringToInt8, convert.Float64ToInt8),
+	)
+	reg.registerNumber(
+		Int16,
+		numberConverter(convert.StringToInt16, convert.Float64ToInt16),
+	)
+	reg.registerNumber(
+		Rune,
+		numberConverter(convert.StringToRune, convert.Float64ToRune),
+	)
+	reg.registerNumber(
+		Int32,
+		numberConverter(convert.StringToInt32, convert.Float64ToInt32),
+	)
+	reg.registerNumber(
+		Int64,
+		numberConverter(convert.StringToInt64, convert.Float64ToInt64),
+	)
+	reg.registerNumber(
+		Int,
+		numberConverter(convert.StringToInt, convert.Float64ToInt),
+	)
 
 	reg.Register(Float32, convert.ToAnyAny(convert.Float64ToFloat32))
 	reg.Register(Float64, convert.ToAnyAny(convert.Float64ToFloat64))

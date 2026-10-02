@@ -4,6 +4,7 @@
 package jsontype
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"strconv"
@@ -63,19 +64,29 @@ func Unmarshal(reg *Registry, data []byte, val *Value) error {
 // unmarshalEnvelope decodes the {"type": "...", "value": ...} form.
 func unmarshalEnvelope(reg *Registry, data []byte, val *Value) error {
 	tmp := struct {
-		Type  string `json:"type"`
-		Value any    `json:"value"`
+		Type  string          `json:"type"`
+		Value json.RawMessage `json:"value"`
 	}{}
 	if err := json.Unmarshal(data, &tmp); err != nil {
 		return fmt.Errorf("jsontype: %w", err)
 	}
-	cnv := reg.Converter(tmp.Type)
+	cnv, num := reg.converter(tmp.Type)
 	if cnv == nil {
 		return fmt.Errorf("jsontype: %w: %s", convert.ErrUnsType, tmp.Type)
 	}
+	var value any
+	if len(tmp.Value) > 0 {
+		dec := json.NewDecoder(bytes.NewReader(tmp.Value))
+		if num {
+			dec.UseNumber()
+		}
+		if err := dec.Decode(&value); err != nil {
+			return fmt.Errorf("jsontype: %w", err)
+		}
+	}
 	val.typ = tmp.Type
 	var err error
-	if val.val, err = cnv(tmp.Value); err != nil {
+	if val.val, err = cnv(value); err != nil {
 		return fmt.Errorf("jsontype: %w", err)
 	}
 	return nil

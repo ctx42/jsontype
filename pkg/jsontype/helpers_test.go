@@ -4,6 +4,7 @@
 package jsontype
 
 import (
+	"math"
 	"testing"
 	"time"
 
@@ -41,6 +42,67 @@ func Test_Unmarshal(t *testing.T) {
 		// --- Then ---
 		assert.NoError(t, err)
 		assert.Equal(t, "nil", val.typ)
+		assert.Nil(t, val.val)
+	})
+
+	t.Run("success envelope max uint64", func(t *testing.T) {
+		// --- Given ---
+		reg := DefaultRegistry()
+		data := []byte(`{"type": "uint64", "value": 18446744073709551615}`)
+		val := &Value{}
+
+		// --- When ---
+		err := Unmarshal(reg, data, val)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Uint64, val.typ)
+		assert.Equal(t, uint64(math.MaxUint64), val.val)
+	})
+
+	t.Run("success envelope large int64", func(t *testing.T) {
+		// --- Given ---
+		reg := DefaultRegistry()
+		data := []byte(`{"type": "int64", "value": -9007199254740993}`)
+		val := &Value{}
+
+		// --- When ---
+		err := Unmarshal(reg, data, val)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Int64, val.typ)
+		assert.Equal(t, int64(-9007199254740993), val.val)
+	})
+
+	t.Run("success envelope custom converter gets float64", func(t *testing.T) {
+		// --- Given ---
+		reg := DefaultRegistry()
+		reg.Register(Uint64, func(value any) (any, error) { return value, nil })
+		data := []byte(`{"type": "uint64", "value": 42}`)
+		val := &Value{}
+
+		// --- When ---
+		err := Unmarshal(reg, data, val)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Uint64, val.typ)
+		assert.Equal(t, 42.0, val.val)
+	})
+
+	t.Run("success envelope without value", func(t *testing.T) {
+		// --- Given ---
+		reg := DefaultRegistry()
+		data := []byte(`{"type": "nil"}`)
+		val := &Value{}
+
+		// --- When ---
+		err := Unmarshal(reg, data, val)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Nil, val.typ)
 		assert.Nil(t, val.val)
 	})
 
