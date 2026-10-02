@@ -662,6 +662,25 @@ func Test_Value_UnmarshalJSON(t *testing.T) {
 }
 
 func Test_FromMap(t *testing.T) {
+	type MyType int
+
+	t.Run("use custom registry", func(t *testing.T) {
+		// --- Given ---
+		cnv := func(value any) (any, error) { return value, nil }
+		reg := NewRegistry()
+		reg.Register("jsontype.MyType", cnv)
+		m := map[string]any{"type": "jsontype.MyType", "value": MyType(42)}
+		opt := WithRegistry(reg)
+
+		// --- When ---
+		have, err := FromMap(m, opt)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, "jsontype.MyType", have.typ)
+		assert.Equal(t, MyType(42), have.val)
+	})
+
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{"type": "uint", "value": uint(42)}
@@ -739,7 +758,8 @@ func Test_FromMap(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvValue, err)
-		assert.ErrorEqual(t, "jsontype: types do not match: invalid value", err)
+		want := "jsontype: types do not match: int != uint: invalid value"
+		assert.ErrorEqual(t, want, err)
 		assert.Nil(t, have)
 	})
 
@@ -780,6 +800,24 @@ func Test_AsValue(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, Uint, have.typ)
 		assert.Equal(t, uint(42), have.val)
+	})
+
+	t.Run("map with custom registry", func(t *testing.T) {
+		// --- Given ---
+		type MyType int
+		cnv := func(value any) (any, error) { return value, nil }
+		reg := NewRegistry()
+		reg.Register("jsontype.MyType", cnv)
+		m := map[string]any{"type": "jsontype.MyType", "value": MyType(42)}
+		opt := WithRegistry(reg)
+
+		// --- When ---
+		have, err := AsValue(m, opt)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, "jsontype.MyType", have.typ)
+		assert.Equal(t, MyType(42), have.val)
 	})
 
 	t.Run("error - not a map", func(t *testing.T) {

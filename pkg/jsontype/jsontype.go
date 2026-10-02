@@ -217,8 +217,8 @@ func (val *Value) UnmarshalJSON(bytes []byte) error {
 
 // FromMap constructs an instance of [Value] from its map representation. It
 // expects the map to have the same structure as the one returned from the
-// [Value.Map] method.
-func FromMap(m map[string]any) (val *Value, err error) {
+// [Value.Map] method. The options are passed to [NewValue].
+func FromMap(m map[string]any, opts ...Option) (val *Value, err error) {
 	var v any
 	var ok bool
 
@@ -226,7 +226,7 @@ func FromMap(m map[string]any) (val *Value, err error) {
 		format := "jsontype: missing value field: %w"
 		return nil, fmt.Errorf(format, convert.ErrInvFormat)
 	}
-	if val, err = NewValue(v); err != nil {
+	if val, err = NewValue(v, opts...); err != nil {
 		return nil, err
 	}
 
@@ -242,21 +242,21 @@ func FromMap(m map[string]any) (val *Value, err error) {
 	}
 
 	if typ != val.typ {
-		format := "jsontype: types do not match: %w"
-		return nil, fmt.Errorf(format, convert.ErrInvValue)
+		format := "jsontype: types do not match: %s != %s: %w"
+		return nil, fmt.Errorf(format, typ, val.typ, convert.ErrInvValue)
 	}
 	return val, nil
 }
 
 // AsValue converts a map in the format returned by [Value.Map] into a [Value].
 // If v is already a *Value, it returns that value directly. Returns error if
-// conversion is not possible.
-func AsValue(v any) (*Value, error) {
+// conversion is not possible. The options are passed to [FromMap].
+func AsValue(v any, opts ...Option) (*Value, error) {
 	if val, ok := v.(*Value); ok {
 		return val, nil
 	}
 	if val, ok := v.(map[string]any); ok {
-		return FromMap(val)
+		return FromMap(val, opts...)
 	}
 	return nil, fmt.Errorf("jsontype: %w", convert.ErrInvType)
 }
