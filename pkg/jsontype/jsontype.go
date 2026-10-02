@@ -18,8 +18,9 @@ import (
 var registry = DefaultRegistry()
 
 // Register registers a converter for the given type name in the
-// package-level registry, used by [Value.UnmarshalJSON], [NewValue], and
-// [FromMap] by default. See [Registry.Register].
+// package-level registry. It is the registry [json.Unmarshal] uses through
+// [Value.UnmarshalJSON], and the default for [NewValue] and [FromMap]; it is
+// safe for concurrent use. See [Registry.Register].
 func Register(typ string, cnv convert.AnyToAny) convert.AnyToAny {
 	return registry.Register(typ, cnv)
 }
