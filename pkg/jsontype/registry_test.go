@@ -35,7 +35,7 @@ func Test_Registry_Register(t *testing.T) {
 		assert.Same(t, cnv, val)
 	})
 
-	t.Run("register not registered", func(t *testing.T) {
+	t.Run("overwrite registered", func(t *testing.T) {
 		// --- Given ---
 		cnv0 := func(value any) (any, error) { return value, nil }
 		cnv1 := func(value any) (any, error) { return value, nil }
