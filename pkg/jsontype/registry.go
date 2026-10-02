@@ -26,7 +26,10 @@ func NewRegistry() *Registry {
 }
 
 // Register registers a converter for the given type name. Returns the
-// previous converter if one was already registered, nil otherwise.
+// previous converter if one was already registered, nil otherwise. A nil
+// converter is ignored, and nil is returned. The converter receives JSON
+// numbers as float64, also when it replaces a built-in numeric converter,
+// so integers beyond 2^53 lose precision.
 func (reg *Registry) Register(
 	name string,
 	cnv convert.AnyToAny,
