@@ -365,7 +365,7 @@ func Test_New(t *testing.T) {
 		assert.Equal(t, (*int)(nil), have.val)
 	})
 
-	t.Run("type from a standard library", func(t *testing.T) {
+	t.Run("type from internal package", func(t *testing.T) {
 		// --- Given ---
 		v := test.Type{}
 
