@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"strconv"
 
 	"github.com/ctx42/convert/pkg/convert"
 )
@@ -15,14 +14,12 @@ import (
 // Unmarshal unmarshals JSON representation of the value using [Registry].
 // Transparent types (string, bool, nil, float64) are detected by their JSON
 // shape and require no envelope. The envelope form is still accepted for all
-// types (back-compatibility).
+// types (back-compatibility). Whitespace around the JSON value is ignored.
 func Unmarshal(reg *Registry, data []byte, val *Value) error {
+	data = bytes.Trim(data, " \t\r\n")
 	var first byte
-	for _, b := range data {
-		if b != ' ' && b != '\t' && b != '\r' && b != '\n' {
-			first = b
-			break
-		}
+	if len(data) > 0 {
+		first = data[0]
 	}
 	switch first {
 	case '"':
@@ -51,8 +48,8 @@ func Unmarshal(reg *Registry, data []byte, val *Value) error {
 		val.typ, val.val = Nil, nil
 		return nil
 	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-':
-		f, err := strconv.ParseFloat(string(data), 64)
-		if err != nil {
+		var f float64
+		if err := json.Unmarshal(data, &f); err != nil {
 			return fmt.Errorf("jsontype: %w", err)
 		}
 		val.typ, val.val = Float64, f

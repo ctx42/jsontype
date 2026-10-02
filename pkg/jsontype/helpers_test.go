@@ -211,6 +211,64 @@ func Test_Unmarshal(t *testing.T) {
 		assert.Equal(t, -1.5, val.val)
 	})
 
+	t.Run("success surrounding whitespace", func(t *testing.T) {
+		// --- Given ---
+		reg := NewRegistry()
+		data := []byte(" \t\r\ntrue\n")
+		val := &Value{}
+
+		// --- When ---
+		err := Unmarshal(reg, data, val)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Bool, val.typ)
+		assert.Equal(t, true, val.val)
+	})
+
+	t.Run("success bare float64 trailing newline", func(t *testing.T) {
+		// --- Given ---
+		reg := NewRegistry()
+		data := []byte("1\n")
+		val := &Value{}
+
+		// --- When ---
+		err := Unmarshal(reg, data, val)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Float64, val.typ)
+		assert.Equal(t, 1.0, val.val)
+	})
+
+	t.Run("error - infinity", func(t *testing.T) {
+		// --- Given ---
+		reg := NewRegistry()
+		data := []byte(`-Inf`)
+		val := &Value{}
+
+		// --- When ---
+		err := Unmarshal(reg, data, val)
+
+		// --- Then ---
+		want := "jsontype: invalid character 'I' in numeric literal"
+		assert.ErrorEqual(t, want, err)
+	})
+
+	t.Run("error - hexadecimal float", func(t *testing.T) {
+		// --- Given ---
+		reg := NewRegistry()
+		data := []byte(`0x1p4`)
+		val := &Value{}
+
+		// --- When ---
+		err := Unmarshal(reg, data, val)
+
+		// --- Then ---
+		want := "jsontype: invalid character 'x' after top-level value"
+		assert.ErrorEqual(t, want, err)
+	})
+
 	t.Run("error - invalid bare string", func(t *testing.T) {
 		// --- Given ---
 		reg := NewRegistry()
@@ -273,8 +331,8 @@ func Test_Unmarshal(t *testing.T) {
 		err := Unmarshal(reg, data, val)
 
 		// --- Then ---
-		assert.ErrorContain(t, `jsontype: `, err)
-		assert.ErrorContain(t, `: invalid syntax`, err)
+		want := "jsontype: invalid character 'a' after top-level value"
+		assert.ErrorEqual(t, want, err)
 	})
 
 	t.Run("error - invalid JSON", func(t *testing.T) {
