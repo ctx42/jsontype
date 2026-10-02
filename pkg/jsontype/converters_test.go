@@ -25,8 +25,11 @@ func Test_NilConverter(t *testing.T) {
 	})
 
 	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		v := 42
+
 		// --- When ---
-		have, err := NilConverter(42)
+		have, err := NilConverter(v)
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvType, err)

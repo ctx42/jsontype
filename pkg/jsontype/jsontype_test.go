@@ -101,8 +101,11 @@ func Test_DefaultRegistry(t *testing.T) {
 
 func Test_New(t *testing.T) {
 	t.Run("int", func(t *testing.T) {
+		// --- Given ---
+		v := 42
+
 		// --- When ---
-		have := New(42)
+		have := New(v)
 
 		// --- Then ---
 		assert.Equal(t, Int, have.typ)
@@ -110,8 +113,11 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("int8", func(t *testing.T) {
+		// --- Given ---
+		v := int8(42)
+
 		// --- When ---
-		have := New(int8(42))
+		have := New(v)
 
 		// --- Then ---
 		assert.Equal(t, Int8, have.typ)
@@ -119,8 +125,11 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("int16", func(t *testing.T) {
+		// --- Given ---
+		v := int16(42)
+
 		// --- When ---
-		have := New(int16(42))
+		have := New(v)
 
 		// --- Then ---
 		assert.Equal(t, Int16, have.typ)
@@ -128,8 +137,11 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("int32", func(t *testing.T) {
+		// --- Given ---
+		v := int32(42)
+
 		// --- When ---
-		have := New(int32(42))
+		have := New(v)
 
 		// --- Then ---
 		assert.Equal(t, Int32, have.typ)
@@ -137,8 +149,11 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("int64", func(t *testing.T) {
+		// --- Given ---
+		v := int64(42)
+
 		// --- When ---
-		have := New(int64(42))
+		have := New(v)
 
 		// --- Then ---
 		assert.Equal(t, Int64, have.typ)
@@ -146,8 +161,11 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("uint", func(t *testing.T) {
+		// --- Given ---
+		v := uint(42)
+
 		// --- When ---
-		have := New(uint(42))
+		have := New(v)
 
 		// --- Then ---
 		assert.Equal(t, Uint, have.typ)
@@ -155,8 +173,11 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("uint8", func(t *testing.T) {
+		// --- Given ---
+		v := uint8(42)
+
 		// --- When ---
-		have := New(uint8(42))
+		have := New(v)
 
 		// --- Then ---
 		assert.Equal(t, Uint8, have.typ)
@@ -164,8 +185,11 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("uint16", func(t *testing.T) {
+		// --- Given ---
+		v := uint16(42)
+
 		// --- When ---
-		have := New(uint16(42))
+		have := New(v)
 
 		// --- Then ---
 		assert.Equal(t, Uint16, have.typ)
@@ -173,8 +197,11 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("uint32", func(t *testing.T) {
+		// --- Given ---
+		v := uint32(42)
+
 		// --- When ---
-		have := New(uint32(42))
+		have := New(v)
 
 		// --- Then ---
 		assert.Equal(t, Uint32, have.typ)
@@ -182,8 +209,11 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("uint64", func(t *testing.T) {
+		// --- Given ---
+		v := uint64(42)
+
 		// --- When ---
-		have := New(uint64(42))
+		have := New(v)
 
 		// --- Then ---
 		assert.Equal(t, Uint64, have.typ)
@@ -191,8 +221,11 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("float32", func(t *testing.T) {
+		// --- Given ---
+		v := float32(42)
+
 		// --- When ---
-		have := New(float32(42))
+		have := New(v)
 
 		// --- Then ---
 		assert.Equal(t, Float32, have.typ)
@@ -200,8 +233,11 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("float64", func(t *testing.T) {
+		// --- Given ---
+		v := float64(42)
+
 		// --- When ---
-		have := New(float64(42))
+		have := New(v)
 
 		// --- Then ---
 		assert.Equal(t, Float64, have.typ)
@@ -209,8 +245,11 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("byte", func(t *testing.T) {
+		// --- Given ---
+		v := byte(42)
+
 		// --- When ---
-		have := New(byte(42))
+		have := New(v)
 
 		// --- Then ---
 		assert.Equal(t, Uint8, have.typ)
@@ -218,8 +257,11 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("rune", func(t *testing.T) {
+		// --- Given ---
+		v := rune(42)
+
 		// --- When ---
-		have := New(rune(42))
+		have := New(v)
 
 		// --- Then ---
 		assert.Equal(t, Int32, have.typ)
@@ -227,8 +269,11 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("string", func(t *testing.T) {
+		// --- Given ---
+		v := "abc"
+
 		// --- When ---
-		have := New("abc")
+		have := New(v)
 
 		// --- Then ---
 		assert.Equal(t, String, have.typ)
@@ -236,8 +281,11 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("bool", func(t *testing.T) {
+		// --- Given ---
+		v := true
+
 		// --- When ---
-		have := New(true)
+		have := New(v)
 
 		// --- Then ---
 		assert.Equal(t, Bool, have.typ)
@@ -307,8 +355,11 @@ func Test_NewValue(t *testing.T) {
 	})
 
 	t.Run("registered type", func(t *testing.T) {
+		// --- Given ---
+		v := 42
+
 		// --- When ---
-		have, err := NewValue(42)
+		have, err := NewValue(v)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -321,9 +372,11 @@ func Test_NewValue(t *testing.T) {
 		cnv := func(value any) (any, error) { return value, nil }
 		reg := NewRegistry()
 		reg.Register("jsontype.MyType", cnv)
+		v := MyType(42)
+		opt := WithRegistry(reg)
 
 		// --- When ---
-		have, err := NewValue(MyType(42), WithRegistry(reg))
+		have, err := NewValue(v, opt)
 
 		// --- Then ---
 		assert.NoError(t, err)
@@ -333,10 +386,11 @@ func Test_NewValue(t *testing.T) {
 
 	t.Run("error - nil registry", func(t *testing.T) {
 		// --- Given ---
+		v := 42
 		opt := WithRegistry(nil)
 
 		// --- When ---
-		have, err := NewValue(42, opt)
+		have, err := NewValue(v, opt)
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrNilRegistry, err)
@@ -345,8 +399,11 @@ func Test_NewValue(t *testing.T) {
 	})
 
 	t.Run("error - unsupported type", func(t *testing.T) {
+		// --- Given ---
+		v := MyType(42)
+
 		// --- When ---
-		have, err := NewValue(MyType(42))
+		have, err := NewValue(v)
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrUnsType, err)
@@ -827,10 +884,11 @@ func Test_Value_UnmarshalJSON_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- Given ---
+			data := []byte(tc.json)
 			val := &Value{}
 
 			// --- When ---
-			err := val.UnmarshalJSON([]byte(tc.json))
+			err := val.UnmarshalJSON(data)
 
 			// --- Then ---
 			assert.NoError(t, err)

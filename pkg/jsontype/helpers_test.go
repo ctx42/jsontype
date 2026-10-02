@@ -38,10 +38,11 @@ func Test_marshal(t *testing.T) {
 func Test_keyValue(t *testing.T) {
 	t.Run("key exists", func(t *testing.T) {
 		// --- Given ---
+		key := "B"
 		m := map[string]any{"A": 1, "B": 2}
 
 		// --- When ---
-		have, ok := keyValue("B", m)
+		have, ok := keyValue(key, m)
 
 		// --- Then ---
 		assert.Equal(t, 2, have)
@@ -49,8 +50,11 @@ func Test_keyValue(t *testing.T) {
 	})
 
 	t.Run("nil map", func(t *testing.T) {
+		// --- Given ---
+		key := "B"
+
 		// --- When ---
-		have, ok := keyValue("B", nil)
+		have, ok := keyValue(key, nil)
 
 		// --- Then ---
 		assert.Nil(t, have)
