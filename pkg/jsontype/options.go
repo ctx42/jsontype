@@ -3,10 +3,10 @@
 
 package jsontype
 
-// Option represents a configuration option.
+// Option configures [NewValue], [FromMap], and [AsValue].
 type Option func(*Options)
 
-// Options represents configuration options.
+// Options holds the configuration set by [Option] functions.
 type Options struct {
 	reg *Registry
 }
