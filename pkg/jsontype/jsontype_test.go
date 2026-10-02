@@ -442,8 +442,7 @@ func Test_Value_Map(t *testing.T) {
 	have := val.Map()
 
 	// --- Then ---
-	want := map[string]any{"type": "uint", "value": uint(42)}
-	assert.Equal(t, want, have)
+	assert.Equal(t, map[string]any{"type": "uint", "value": uint(42)}, have)
 }
 
 func Test_Value_MarshalJSON(t *testing.T) {
