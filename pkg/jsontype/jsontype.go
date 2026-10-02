@@ -112,7 +112,7 @@ func DefaultRegistry() *Registry {
 
 	cnv := convert.StringToTime(time.RFC3339Nano)
 	reg.Register(Time, convert.ToAnyAny(cnv))
-	reg.Register(Duration, convert.ToAnyAny(convert.StringToDuration))
+	reg.registerNumber(Duration, durationConverter())
 
 	reg.Register(String, convert.ToAnyAny(convert.StringToString))
 	reg.Register(Bool, convert.ToAnyAny(convert.BoolToBool))

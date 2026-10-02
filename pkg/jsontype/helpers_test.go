@@ -75,6 +75,21 @@ func Test_Unmarshal(t *testing.T) {
 		assert.Equal(t, int64(-9007199254740993), val.val)
 	})
 
+	t.Run("success envelope duration in nanoseconds", func(t *testing.T) {
+		// --- Given ---
+		reg := DefaultRegistry()
+		data := []byte(`{"type": "time.Duration", "value": 60000000000}`)
+		val := &Value{}
+
+		// --- When ---
+		err := Unmarshal(reg, data, val)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Duration, val.typ)
+		assert.Equal(t, time.Minute, val.val)
+	})
+
 	t.Run("success envelope custom converter gets float64", func(t *testing.T) {
 		// --- Given ---
 		reg := DefaultRegistry()

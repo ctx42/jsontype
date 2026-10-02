@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/ctx42/convert/pkg/convert"
 )
@@ -47,4 +48,30 @@ func numberConverter[T any](
 		}
 		return ret, nil
 	}
+}
+
+// durationConverter returns a converter for [time.Duration]. It accepts a
+// duration string (e.g. "1m30s") and a number of nanoseconds, which is how
+// [json.Marshal] writes a [time.Duration].
+func durationConverter() convert.AnyToAny {
+	fromNumber := numberConverter(
+		nanosecondsToDuration,
+		convert.Float64ToDuration,
+	)
+	return func(value any) (any, error) {
+		if str, ok := value.(string); ok {
+			return convert.StringToDuration(str)
+		}
+		return fromNumber(value)
+	}
+}
+
+// nanosecondsToDuration converts a base-10 number of nanoseconds to
+// [time.Duration] without precision loss.
+func nanosecondsToDuration(src string) (time.Duration, error) {
+	ns, err := convert.StringToInt64(src)
+	if err != nil {
+		return 0, convert.ChangeErrDstName(err, "time.Duration")
+	}
+	return time.Duration(ns), nil
 }
