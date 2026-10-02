@@ -5,6 +5,7 @@ package jsontype
 
 import (
 	"encoding/json"
+	"math"
 	"testing"
 	"time"
 
@@ -482,6 +483,7 @@ func Test_Value_MarshalJSON(t *testing.T) {
 
 		// --- Then ---
 		assert.ErrorIs(t, convert.ErrInvValue, err)
+		assert.ErrorEqual(t, "jsontype: empty type: invalid value", err)
 		assert.Nil(t, have)
 	})
 
@@ -557,7 +559,20 @@ func Test_Value_MarshalJSON(t *testing.T) {
 		have, err := val.MarshalJSON()
 
 		// --- Then ---
-		assert.ErrorEqual(t, "json: unsupported type: func()", err)
+		want := "jsontype: json: unsupported type: func()"
+		assert.ErrorEqual(t, want, err)
+		assert.Nil(t, have)
+	})
+
+	t.Run("error - unsupported float64 value", func(t *testing.T) {
+		// --- Given ---
+		val := &Value{typ: Float64, val: math.NaN()}
+
+		// --- When ---
+		have, err := val.MarshalJSON()
+
+		// --- Then ---
+		assert.ErrorEqual(t, "jsontype: json: unsupported value: NaN", err)
 		assert.Nil(t, have)
 	})
 }

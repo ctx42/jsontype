@@ -172,7 +172,7 @@ func (val *Value) Map() map[string]any {
 // [json.Marshal] can take its address (e.g. a map value).
 func (val Value) MarshalJSON() ([]byte, error) {
 	if val.typ == "" {
-		return nil, convert.ErrInvValue
+		return nil, fmt.Errorf("jsontype: empty type: %w", convert.ErrInvValue)
 	}
 	switch val.typ {
 	case String:
@@ -204,10 +204,11 @@ func (val Value) MarshalJSON() ([]byte, error) {
 			format := "jsontype: %s: %w"
 			return nil, fmt.Errorf(format, val.typ, convert.ErrInvValue)
 		}
-		return json.Marshal(f)
+		return marshal(f)
 	}
-	return json.Marshal(val.Map())
+	return marshal(val.Map())
 }
+
 
 // UnmarshalJSON uses the package-level registry. To unmarshal with a custom
 // registry, call [Unmarshal] directly.

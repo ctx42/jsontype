@@ -485,6 +485,32 @@ func Test_unmarshalEnvelope(t *testing.T) {
 	})
 }
 
+func Test_marshal(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		v := map[string]any{"A": 1}
+
+		// --- When ---
+		have, err := marshal(v)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, `{"A":1}`, string(have))
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		v := func() {}
+
+		// --- When ---
+		have, err := marshal(v)
+
+		// --- Then ---
+		assert.ErrorEqual(t, "jsontype: json: unsupported type: func()", err)
+		assert.Nil(t, have)
+	})
+}
+
 func Test_keyValue(t *testing.T) {
 	t.Run("key exists", func(t *testing.T) {
 		// --- Given ---
