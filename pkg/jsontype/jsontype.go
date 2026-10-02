@@ -107,7 +107,10 @@ func DefaultRegistry() *Registry {
 		numberConverter(convert.StringToInt, convert.Float64ToInt),
 	)
 
-	reg.Register(Float32, convert.ToAnyAny(convert.Float64ToFloat32))
+	reg.registerNumber(
+		Float32,
+		numberConverter(convert.StringToFloat32, convert.Float64ToFloat32),
+	)
 	reg.Register(Float64, convert.ToAnyAny(convert.Float64ToFloat64))
 
 	cnv := convert.StringToTime(time.RFC3339Nano)

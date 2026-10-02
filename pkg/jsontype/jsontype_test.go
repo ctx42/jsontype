@@ -975,6 +975,21 @@ func Test_Unmarshal(t *testing.T) {
 		assert.Equal(t, time.Minute, val.val)
 	})
 
+	t.Run("success envelope float32", func(t *testing.T) {
+		// --- Given ---
+		reg := DefaultRegistry()
+		data := []byte(`{"type": "float32", "value": 0.1}`)
+		val := &Value{}
+
+		// --- When ---
+		err := Unmarshal(reg, data, val)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, Float32, val.typ)
+		assert.Equal(t, float32(0.1), val.val)
+	})
+
 	t.Run("success envelope custom converter gets float64", func(t *testing.T) {
 		// --- Given ---
 		reg := DefaultRegistry()
