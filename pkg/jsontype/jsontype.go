@@ -147,7 +147,7 @@ func NewValue(val any, opts ...Option) (*Value, error) {
 		return nil, fmt.Errorf("jsontype: %w", convert.ErrNilRegistry)
 	}
 	typ := reflect.TypeOf(val).String()
-	if cnv := def.reg.Converter(typ); cnv == nil {
+	if def.reg.Converter(typ) == nil {
 		return nil, fmt.Errorf("jsontype: %w: %s", convert.ErrUnsType, typ)
 	}
 	return &Value{typ: typ, val: val}, nil
