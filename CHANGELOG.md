@@ -1,3 +1,6 @@
+## v0.9.1 (Sat, 10 Oct 2026 19:16:25 UTC)
+- build(deps): update 2 ctx42 dependencies.
+
 ## v0.9.0 (Fri, 02 Oct 2026 20:49:21 UTC)
 - test: isolate package-level registry in Test_Register.
 - fix: unmarshal integers beyond 2^53 without precision loss.
